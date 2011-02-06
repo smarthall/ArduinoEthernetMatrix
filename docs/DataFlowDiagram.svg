@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/PR-SVG-20010719/DTD/svg10.dtd">
+<svg width="12cm" height="15cm" viewBox="197 69 235 292" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <g>
+    <rect style="fill: #ffffff" x="208" y="304" width="146" height="55"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="208" y="304" width="146" height="55"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.7998;font-family:sanserif;font-style:normal;font-weight:normal" x="281" y="335.4">
+      <tspan x="281" y="335.4">Rainbowduino</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="201.55" y="182" width="155.45" height="57"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="201.55" y="182" width="155.45" height="57"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.7998;font-family:sanserif;font-style:normal;font-weight:normal" x="279.275" y="206.4">
+      <tspan x="279.275" y="206.4">Arduino</tspan>
+      <tspan x="279.275" y="222.4">w/ Ethernet Shield</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="198" y="70" width="161" height="54"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="198" y="70" width="161" height="54"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.7998;font-family:sanserif;font-style:normal;font-weight:normal" x="278.5" y="100.9">
+      <tspan x="278.5" y="100.9">PC</tspan>
+    </text>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="278.755" y1="124.994" x2="279.186" y2="172.264"/>
+    <polygon style="fill: #000000" points="279.255,179.764 274.164,169.81 279.186,172.264 284.163,169.719 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="279.255,179.764 274.164,169.81 279.186,172.264 284.163,169.719 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="279.819" y1="240.004" x2="280.82" y2="294.266"/>
+    <polygon style="fill: #000000" points="280.959,301.764 275.775,291.858 280.82,294.266 285.773,291.674 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="280.959,301.764 275.775,291.858 280.82,294.266 285.773,291.674 "/>
+  </g>
+  <text style="fill: #000000;text-anchor:start;font-size:12.7998;font-family:sanserif;font-style:normal;font-weight:normal" x="293" y="155">
+    <tspan x="293" y="155">Ethernet</tspan>
+  </text>
+  <text style="fill: #000000;text-anchor:start;font-size:12.7998;font-family:sanserif;font-style:normal;font-weight:normal" x="298" y="273">
+    <tspan x="298" y="273">Serial @ 115200 bps</tspan>
+  </text>
+</svg>
