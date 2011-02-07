@@ -107,7 +107,7 @@ void loop() {
         break;
       case STATE_DATA:
         buffer[!g_bufCurr][data_read++] = Serial.read();
-        if (data_len < data_read) serial_state = STATE_CHECKSUM;
+        if (data_len == data_read) serial_state = STATE_CHECKSUM;
         break;
       case STATE_CHECKSUM:
         checksum = Serial.read(); // TODO Check Checksum
