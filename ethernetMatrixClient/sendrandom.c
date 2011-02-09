@@ -1,3 +1,5 @@
+#define _GNU_SOURCE
+
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <stdlib.h>
@@ -11,7 +13,7 @@
 #define PORT 1025
 #define SRV_IP "192.168.1.15"
 
-FILE *random = NULL;
+FILE *randomfile = NULL;
 
 void diep(char *s)
 {
@@ -25,9 +27,9 @@ int main(void)
   int s, i, slen=sizeof(si_other);
   char buf[BUFLEN];
 
-  random = fopen("/dev/urandom", "r");
+  randomfile = fopen("/dev/urandom", "r");
 
-  if (random == NULL) {
+  if (randomfile == NULL) {
       exit(1);
   }
 
@@ -42,11 +44,11 @@ int main(void)
     exit(1);
   }
 
-  fread(buf, sizeof(char), 96, random);
+  fread(buf, sizeof(char), 96, randomfile);
   if (sendto(s, buf, BUFLEN, 0, (struct sockaddr *) &si_other, slen)==-1)
     diep("sendto()");
 
-  fclose(random);
+  fclose(randomfile);
   close(s);
   return 0;
 }
