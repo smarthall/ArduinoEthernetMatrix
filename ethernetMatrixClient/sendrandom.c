@@ -8,7 +8,6 @@
 #include <unistd.h>
 
 #define BUFLEN 96
-#define NPACK 1
 #define PORT 1025
 #define SRV_IP "192.168.1.15"
 
@@ -43,12 +42,9 @@ int main(void)
     exit(1);
   }
 
-  for (i=0; i<NPACK; i++) {
-    printf("Sending packet %d\n", i);
-    fread(buf, sizeof(char), 96, random);
-    if (sendto(s, buf, BUFLEN, 0, (struct sockaddr *) &si_other, slen)==-1)
-      diep("sendto()");
-  }
+  fread(buf, sizeof(char), 96, random);
+  if (sendto(s, buf, BUFLEN, 0, (struct sockaddr *) &si_other, slen)==-1)
+    diep("sendto()");
 
   fclose(random);
   close(s);

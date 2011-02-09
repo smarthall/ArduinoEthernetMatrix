@@ -10,8 +10,6 @@
 #include <unistd.h>
 #include <netpbm/pam.h>
 
-#define BUFLEN 96
-#define NPACK 1
 #define PORT 1025
 #define SRV_IP "192.168.1.15"
 
@@ -83,10 +81,8 @@ int main(int argc, char *argv[])
     exit(1);
   }
 
-  for (i=0; i<NPACK; i++) {
-    if (sendto(s, image, BUFLEN, 0, (struct sockaddr *) &si_other, slen)==-1)
-      diep("sendto()");
-  }
+  if (sendto(s, image, sizeof(image), 0, (struct sockaddr *) &si_other, slen)==-1)
+    diep("sendto()");
 
   close(s);
   return 0;
