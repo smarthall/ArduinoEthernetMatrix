@@ -37,8 +37,6 @@ int main(int argc, char *argv[])
   tuple *tuplerow;
   unsigned int row;
 
-  pm_init(argv[0], 0);
-
   pamfile = pm_openr(argv[1]);
 
   pnm_readpaminit(pamfile, &inpam, PAM_STRUCT_SIZE(tuple_type));
