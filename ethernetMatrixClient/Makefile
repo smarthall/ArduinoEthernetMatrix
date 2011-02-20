@@ -23,5 +23,5 @@ sendletter: sendletter.c
 	$(CC) $(CFLAGS) -lnetpbm sendletter.c -o sendletter
 
 clean:
-	rm sendrandom sendinitial sendpnm sendletter
+	rm sendrandom sendinitial sendpnm sendletter sendblank sendorient
 
