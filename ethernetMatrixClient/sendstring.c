@@ -25,8 +25,8 @@ int main(int argc, char *argv[])
   printf("done\n");
 
   // Convert from PAM to viewport
-  for (int x = 0; x < inpam.width; x++) {
-    for (int y = 0; y < inpam.height; y++) {
+  for (int x = 8; x < 16; x++) {
+    for (int y = 0; y < 8; y++) {
       printf("(%d, %d) = R%d G%d B%d\n", x, y, fontimage[y][x][0], fontimage[y][x][1], fontimage[y][x][2]);
     }
   }
