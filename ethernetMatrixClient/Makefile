@@ -21,8 +21,8 @@ sendpnm: sendpnm.c
 sendletter: sendletter.c
 	$(CC) $(CFLAGS) -lnetpbm sendletter.c -o sendletter
 
-sendstring: sendstring.c
-	$(CC) $(CFLAGS) -lnetpbm sendstring.c -o sendstring
+sendstring: sendstring.c viewport.c viewport.h
+	$(CC) $(CFLAGS) -lnetpbm sendstring.c viewport.c -o sendstring
 
 clean:
 	rm sendrandom sendinitial sendpnm sendletter sendblank sendorient sendstring
