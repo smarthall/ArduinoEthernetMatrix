@@ -49,17 +49,15 @@ void setval(viewport image, uint8_t x, uint8_t y, uint8_t plane, uint8_t val) {
 
   if (HILOW(x,y,plane)) {
     // LOW
-    newval = COMBINE(HINIBBLE(oldval), val);
+    newval = COMBINE(HINIBBLE(oldval), setval);
     HL = 'L';
   } else {
     // HIGH
-    newval = COMBINE(val, LONIBBLE(oldval));
+    newval = COMBINE(setval, LONIBBLE(oldval));
     HL = 'H';
   }
 
-  printf("(%d, %d, %d) = [%2d%c] = %1x : %2x->%2x\n", x, y, plane, INDEX(x,y,plane), HL, setval, image[INDEX(x,y,plane)], newval);
   image[INDEX(x,y,newplane)] = newval;
-  //printf("(%d, %d)[%d] ~ %3d%c = %d\n", x, y, plane, INDEX(x,y,plane), HL, val);
 }
 
 uint8_t getval(viewport image, uint8_t x, uint8_t y, uint8_t plane) {
