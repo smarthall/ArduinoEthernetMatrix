@@ -25,15 +25,17 @@ int main(int argc, char *argv[])
   pm_close(pamfile);
   printf("done\n");
 
+  int xpos = (argv[2][0] - 32) * 8;
+
   // Make a viewport
   display = allocviewport();
 
   // Convert from PAM to viewport
-  for (int x = 8; x < 16; x++) {
+  for (int x = xpos; x < (xpos+8); x++) {
     for (int y = 0; y < 8; y++) {
-      setval(display, x - 8, y, 0, fontimage[y][x][0]);
-      setval(display, x - 8, y, 1, fontimage[y][x][1]);
-      setval(display, x - 8, y, 2, fontimage[y][x][2]);
+      setval(display, x - xpos, y, 0, fontimage[y][x][0]);
+      setval(display, x - xpos, y, 1, fontimage[y][x][1]);
+      setval(display, x - xpos, y, 2, fontimage[y][x][2]);
     }
   }
 
