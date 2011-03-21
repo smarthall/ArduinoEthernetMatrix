@@ -1,0 +1,21 @@
+#define _GNU_SOURCE
+
+#include <stdlib.h>
+#include <stdint.h>
+#include <limits.h>
+#include <netpbm/pam.h>
+
+#define VIEWPORT_SIZE (sizeof(uint8_t) * 96)
+typedef uint8_t* viewport;
+
+/* Viewport management functions */
+viewport allocviewport();
+void freeviewport(viewport image);
+
+/* Viewport editing */
+void sendimage(viewport image, char* srv_ip, int port);
+void setval(viewport image, uint8_t x, uint8_t y, uint8_t plane, uint8_t val);
+uint8_t getval(viewport image, uint8_t x, uint8_t y, uint8_t plane);
+void setpixel(viewport image, uint8_t x, uint8_t y, tuple val);
+tuple getpixel(viewport image, uint8_t x, uint8_t y);
+
