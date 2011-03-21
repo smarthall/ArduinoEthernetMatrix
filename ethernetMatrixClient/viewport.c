@@ -16,6 +16,9 @@
 #include "viewport.h"
 #endif
 
+// Debugging switch
+//#define DEBUG
+
 /* For accessing pixels in the viewport */
 #define INDEX(x,y,plane) (((x) / 2 ) + ((y) * 4) + ((plane) * 32))
 #define HILOW(x,y,plane) ((x) % 2)
@@ -41,22 +44,31 @@
 const uint8_t planelut[] = {AR_RED, AR_GREEN, AR_BLUE};
 
 void setval(viewport image, uint8_t x, uint8_t y, uint8_t plane, uint8_t val) {
+  #ifdef DEBUG
+    char HL;
+  #endif
   uint8_t oldval, newval, newplane, setval;
-  char HL;
   newplane = planelut[plane];
-  oldval = image[INDEX(x,y,plane)];
+  oldval = image[INDEX(x,y,newplane)];
   setval = val / 16;
 
-  if (HILOW(x,y,plane)) {
+  if (HILOW(x,y,newplane)) {
     // LOW
     newval = COMBINE(HINIBBLE(oldval), setval);
-    HL = 'L';
+    #ifdef DEBUG
+      HL = 'L';
+    #endif
   } else {
     // HIGH
     newval = COMBINE(setval, LONIBBLE(oldval));
-    HL = 'H';
+    #ifdef DEBUG
+      HL = 'H';
+    #endif
   }
 
+  #ifdef DEBUG
+    printf("(%d, %d, %d) = [%2d%c] = %1x : %2x->%2x\n", x, y, plane, INDEX(x,y,newplane), HL, setval, image[INDEX(x,y,newplane)], newval);
+  #endif
   image[INDEX(x,y,newplane)] = newval;
 }
 
