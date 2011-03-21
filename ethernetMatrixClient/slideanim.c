@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
   // Make a viewport
   display = allocviewport();
 
-  for (int xpos = 0; (xpos + 8) < inpam.width; xpos++) {
+  for (int xpos = 0; (xpos + 7) < inpam.width; xpos++) {
     // Convert from PAM to viewport
     for (int x = xpos; x < (xpos+8); x++) {
       for (int y = 0; y < 8; y++) {
