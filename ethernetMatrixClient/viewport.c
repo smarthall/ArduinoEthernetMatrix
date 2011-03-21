@@ -97,7 +97,9 @@ void sendimage(viewport image, char* srv_ip, int port) {
   int s, i, slen=sizeof(si_other);
 
   //Write to socket
-  printf("Opening Socket... ");
+  #ifdef DEBUG
+    printf("Opening Socket... ");
+  #endif
   if ((s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP))==-1)
     return;
 
@@ -108,15 +110,25 @@ void sendimage(viewport image, char* srv_ip, int port) {
     fprintf(stderr, "inet_aton() failed\n");
     exit(1);
   }
-  printf("done\n");
+  #ifdef DEBUG
+    printf("done\n");
+  #endif
 
-  printf("Sending packet... ");
+  #ifdef DEBUG
+    printf("Sending packet... ");
+  #endif
   if (sendto(s, image, VIEWPORT_SIZE, 0, (struct sockaddr *) &si_other, slen)==-1)
     return;
-  printf("done\n");
+  #ifdef DEBUG
+    printf("done\n");
+  #endif
 
-  printf("Closing socket... ");
+  #ifdef DEBUG
+    printf("Closing socket... ");
+  #endif
   close(s);
-  printf("done\n");
+  #ifdef DEBUG
+    printf("done\n");
+  #endif
 }
 
