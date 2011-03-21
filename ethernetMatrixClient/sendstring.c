@@ -32,8 +32,8 @@ int main(int argc, char *argv[])
   for (int x = 8; x < 16; x++) {
     for (int y = 0; y < 8; y++) {
       setval(display, x - 8, y, 0, fontimage[y][x][0]);
-      setval(display, x - 8, y, 0, fontimage[y][x][1]);
-      setval(display, x - 8, y, 0, fontimage[y][x][2]);
+      setval(display, x - 8, y, 1, fontimage[y][x][1]);
+      setval(display, x - 8, y, 2, fontimage[y][x][2]);
     }
   }
 
