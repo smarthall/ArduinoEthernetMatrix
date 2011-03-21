@@ -18,8 +18,8 @@ sendorient: sendorient.c
 sendpnm: sendpnm.c
 	$(CC) $(CFLAGS) -lnetpbm sendpnm.c -o sendpnm
 
-sendletter: sendletter.c
-	$(CC) $(CFLAGS) -lnetpbm sendletter.c -o sendletter
+sendletter: sendletter.c viewport.c viewport.h
+	$(CC) $(CFLAGS) -lnetpbm sendletter.c viewport.c -o sendletter
 
 sendstring: sendstring.c viewport.c viewport.h
 	$(CC) $(CFLAGS) -lnetpbm sendstring.c viewport.c -o sendstring
