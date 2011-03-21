@@ -1,7 +1,7 @@
 CC := gcc
 CFLAGS := -std=c99
 
-all: sendrandom sendinitial sendpnm sendletter sendblank sendorient sendstring
+all: sendrandom sendinitial sendpnm sendletter sendblank sendorient sendstring slideanim
 
 sendrandom: sendrandom.c
 	$(CC) $(CFLAGS) sendrandom.c -o sendrandom
@@ -24,6 +24,9 @@ sendletter: sendletter.c
 sendstring: sendstring.c viewport.c viewport.h
 	$(CC) $(CFLAGS) -lnetpbm sendstring.c viewport.c -o sendstring
 
+slideanim: slideanim.c viewport.c viewport.h
+	$(CC) $(CFLAGS) -lnetpbm slideanim.c viewport.c -o slideanim
+
 clean:
-	rm sendrandom sendinitial sendpnm sendletter sendblank sendorient sendstring
+	rm sendrandom sendinitial sendpnm sendletter sendblank sendorient sendstring slideanim
 
