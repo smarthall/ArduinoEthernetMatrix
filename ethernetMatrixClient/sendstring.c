@@ -14,35 +14,46 @@
 int main(int argc, char *argv[])
 {
   FILE *pamfile = NULL;
-  struct pam inpam;
-  tuple **fontimage;
+  struct pam inpam, mempam;
+  tuple **fontimage, **memimage;
   viewport display;
+  int textlen = strlen(argv[2]);
 
   // Read font
   pamfile = pm_openr(argv[1]);
   fontimage = pnm_readpam(pamfile, &inpam, PAM_STRUCT_SIZE(tuple_type));
   pm_close(pamfile);
 
-  int xpos = (argv[2][0] - 32) * 8;
+  // Setup In-memory Pam file
+  //mempam.size = 
+  //mempam.len =
+  mempam.file = NULL;
+  mempam.format = PPM_FORMAT;
+  mempam.height = 8;
+  mempam.width = textlen * 8;
+  mempam.maxval = 255;
+  //mempam.tuple_type = "PAM_PPM_TUPLETYPE";
+  memimage = pnm_allocpamarray(&mempam);
 
   // Make a viewport
   display = allocviewport();
 
   // Convert from PAM to viewport
-  for (int x = xpos; x < (xpos+8); x++) {
-    for (int y = 0; y < 8; y++) {
-      setval(display, x - xpos, y, 0, fontimage[y][x][0]);
-      setval(display, x - xpos, y, 1, fontimage[y][x][1]);
-      setval(display, x - xpos, y, 2, fontimage[y][x][2]);
-    }
-  }
+  //for (int x = xpos; x < (xpos+8); x++) {
+  //  for (int y = 0; y < 8; y++) {
+  //    setval(display, x - xpos, y, 0, fontimage[y][x][0]);
+  //    setval(display, x - xpos, y, 1, fontimage[y][x][1]);
+  //    setval(display, x - xpos, y, 2, fontimage[y][x][2]);
+  //  }
+  //}
 
   // Send to Arduino
-  sendimage(display, "192.168.1.15", 1025);
+  //sendimage(display, "192.168.1.15", 1025);
 
   // Free up stuff
   freeviewport(display);
   pnm_freepamarray( fontimage, &inpam );
+  pnm_freepamarray( memimage, &mempam );
 
   return 0;
 }
