@@ -1,5 +1,5 @@
 CC := gcc
-CFLAGS := -std=c99
+CFLAGS := -std=c99 -g
 
 all: sendrandom sendinitial sendpnm sendletter sendblank sendorient sendstring slideanim
 
