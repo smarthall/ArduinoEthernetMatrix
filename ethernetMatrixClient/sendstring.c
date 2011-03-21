@@ -25,14 +25,16 @@ int main(int argc, char *argv[])
   pm_close(pamfile);
 
   // Setup In-memory Pam file
-  //mempam.size = 
-  //mempam.len =
-  mempam.file = NULL;
+  mempam.size = sizeof(mempam);
+  mempam.len = PAM_STRUCT_SIZE(tuple_type);
+  mempam.file = stdout;
   mempam.format = PPM_FORMAT;
+  mempam.plainformat = 0;
   mempam.height = 8;
   mempam.width = textlen * 8;
+  mempam.depth = 3;
   mempam.maxval = 255;
-  //mempam.tuple_type = "PAM_PPM_TUPLETYPE";
+  strcpy(mempam.tuple_type, PAM_PPM_TUPLETYPE);
   memimage = pnm_allocpamarray(&mempam);
 
   // Make a viewport
