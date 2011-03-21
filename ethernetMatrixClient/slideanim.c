@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
     sendimage(display, "192.168.1.15", 1025);
 
     // Pause between frames
-    sleep(1);
+    usleep(70000);
   }
 
   // Free up stuff
