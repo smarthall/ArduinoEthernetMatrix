@@ -17,7 +17,7 @@
 #endif
 
 /* For accessing pixels in the viewport */
-#define INDEX(x,y,plane) ((y) + ((x) * 4) + ((plane) * 24))
+#define INDEX(x,y,plane) (((x) / 2 ) + ((y) * 4) + ((plane) * 32))
 #define HILOW(x,y,plane) ((x) % 2)
 #define HINIBBLE(x) (x>>4)
 #define LONIBBLE(x) (x & 0x0F)
@@ -41,8 +41,25 @@
 const uint8_t planelut[] = {AR_RED, AR_GREEN, AR_BLUE};
 
 void setval(viewport image, uint8_t x, uint8_t y, uint8_t plane, uint8_t val) {
-  plane = planelut[plane];
-  image[INDEX(x,y,plane)] = val;
+  uint8_t oldval, newval, newplane, setval;
+  char HL;
+  newplane = planelut[plane];
+  oldval = image[INDEX(x,y,plane)];
+  setval = val / 16;
+
+  if (HILOW(x,y,plane)) {
+    // LOW
+    newval = COMBINE(HINIBBLE(oldval), val);
+    HL = 'L';
+  } else {
+    // HIGH
+    newval = COMBINE(val, LONIBBLE(oldval));
+    HL = 'H';
+  }
+
+  printf("(%d, %d, %d) = [%2d%c] = %1x : %2x->%2x\n", x, y, plane, INDEX(x,y,plane), HL, setval, image[INDEX(x,y,plane)], newval);
+  image[INDEX(x,y,newplane)] = newval;
+  //printf("(%d, %d)[%d] ~ %3d%c = %d\n", x, y, plane, INDEX(x,y,plane), HL, val);
 }
 
 uint8_t getval(viewport image, uint8_t x, uint8_t y, uint8_t plane) {
