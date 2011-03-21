@@ -19,11 +19,9 @@ int main(int argc, char *argv[])
   viewport display;
 
   // Read font
-  printf("Reading Font... ");
   pamfile = pm_openr(argv[1]);
   fontimage = pnm_readpam(pamfile, &inpam, PAM_STRUCT_SIZE(tuple_type));
   pm_close(pamfile);
-  printf("done\n");
 
   int xpos = (argv[2][0] - 32) * 8;
 
