@@ -60,22 +60,25 @@ int main(int argc, char *argv[])
     bitblit(memimage, i * 8, 0, fontimage, (ch - 32) * 8, 0, 8, 8);
   }
 
-  pnm_writepam(&mempam, memimage);
-
   // Make a viewport
   display = allocviewport();
 
-  // Convert from PAM to viewport
-  //for (int x = xpos; x < (xpos+8); x++) {
-  //  for (int y = 0; y < 8; y++) {
-  //    setval(display, x - xpos, y, 0, fontimage[y][x][0]);
-  //    setval(display, x - xpos, y, 1, fontimage[y][x][1]);
-  //    setval(display, x - xpos, y, 2, fontimage[y][x][2]);
-  //  }
-  //}
+  for (int xpos = 0; (xpos + 7) < mempam.width; xpos++) {
+    // Convert from PAM to viewport
+    for (int x = xpos; x < (xpos+8); x++) {
+      for (int y = 0; y < 8; y++) {
+        setval(display, x - xpos, y, 0, memimage[y][x][0]);
+        setval(display, x - xpos, y, 1, memimage[y][x][1]);
+        setval(display, x - xpos, y, 2, memimage[y][x][2]);
+      }   
+    }   
 
-  // Send to Arduino
-  //sendimage(display, "192.168.1.15", 1025);
+    // Send to Arduino
+    sendimage(display, "192.168.1.15", 1025);
+
+    // Pause between frames
+    usleep(70000);
+  }
 
   // Free up stuff
   for (int x = 0; x < mempam.width; x++)
