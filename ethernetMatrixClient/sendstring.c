@@ -11,7 +11,7 @@
 
 #include "viewport.h"
 
-void bitblit(tuple ** dest, int destx, int desty, tuple **src, int srcx, int srcy, int width, int height) {
+void createfrom(struct pam * structpam, tuple ** dest, int destx, int desty, tuple **src, int srcx, int srcy, int width, int height) {
   int maxx = srcx + width;
   int maxy = srcy + height;
 
@@ -21,10 +21,8 @@ void bitblit(tuple ** dest, int destx, int desty, tuple **src, int srcx, int src
   for (int x = srcx; x < maxx; x++) {
     for (int y = srcy; y < maxy; y++) {
       printf("(%d, %d) -> (%d, %d)\n", x, y, x + xdiff, y + ydiff);
-      //memcpy(dest[x + xdiff][y + ydiff], src[x][y], sizeof(sample) * 3);
-      dest[y + ydiff][x - xdiff][0] = src[y][x][0];
-      dest[y + ydiff][x - xdiff][1] = src[y][x][1];
-      dest[y + ydiff][x - xdiff][2] = src[y][x][2];
+      dest[y + ydiff][x - xdiff] = pnm_allocpamtuple(structpam);
+      memcpy(dest[y + ydiff][x + xdiff], src[y][x], sizeof(sample) * structpam->depth);
     }
   }
 }
@@ -54,10 +52,11 @@ int main(int argc, char *argv[])
   mempam.maxval = 255;
   strcpy(mempam.tuple_type, PAM_PPM_TUPLETYPE);
   memimage = pnm_allocpamarray(&mempam);
+
   
   for (int i = 0; i < textlen; i++) {
     char ch = argv[2][i];
-    bitblit(memimage, i * 8, 0, fontimage, (ch - 32) * 8, 0, 8, 8);
+    createfrom(&mempam, memimage, i * 8, 0, fontimage, (ch - 32) * 8, 0, 8, 8);
   }
 
   // Make a viewport
