@@ -11,7 +11,7 @@
 
 #include "viewport.h"
 
-void createfrom(struct pam * structpam, tuple ** dest, int destx, int desty, tuple **src, int srcx, int srcy, int width, int height) {
+void bitblit(tuple ** dest, int destx, int desty, tuple **src, int srcx, int srcy, int width, int height) {
   int maxx = srcx + width;
   int maxy = srcy + height;
 
@@ -20,9 +20,8 @@ void createfrom(struct pam * structpam, tuple ** dest, int destx, int desty, tup
 
   for (int x = srcx; x < maxx; x++) {
     for (int y = srcy; y < maxy; y++) {
-      printf("(%d, %d) -> (%d, %d)\n", x, y, x + xdiff, y + ydiff);
-      dest[y + ydiff][x - xdiff] = pnm_allocpamtuple(structpam);
-      memcpy(dest[y + ydiff][x + xdiff], src[y][x], sizeof(sample) * structpam->depth);
+      //fprintf(stderr, "(%d, %d) -> (%d, %d)\n", x, y, x + xdiff, y + ydiff);
+      memcpy(dest[y + ydiff][x + xdiff], src[y][x], sizeof(sample) * 3);
     }
   }
 }
@@ -52,12 +51,16 @@ int main(int argc, char *argv[])
   mempam.maxval = 255;
   strcpy(mempam.tuple_type, PAM_PPM_TUPLETYPE);
   memimage = pnm_allocpamarray(&mempam);
-
+  for (int x = 0; x < mempam.width; x++)
+    for (int y = 0; y < mempam.height; y++)
+      memimage[y][x] = pnm_allocpamtuple(&mempam);
   
   for (int i = 0; i < textlen; i++) {
     char ch = argv[2][i];
-    createfrom(&mempam, memimage, i * 8, 0, fontimage, (ch - 32) * 8, 0, 8, 8);
+    bitblit(memimage, i * 8, 0, fontimage, (ch - 32) * 8, 0, 8, 8);
   }
+
+  pnm_writepam(&mempam, memimage);
 
   // Make a viewport
   display = allocviewport();
@@ -75,6 +78,9 @@ int main(int argc, char *argv[])
   //sendimage(display, "192.168.1.15", 1025);
 
   // Free up stuff
+  for (int x = 0; x < mempam.width; x++)
+    for (int y = 0; y < mempam.height; y++)
+      pnm_freepamtuple(memimage[y][x]);
   freeviewport(display);
   pnm_freepamarray( fontimage, &inpam );
   pnm_freepamarray( memimage, &mempam );
