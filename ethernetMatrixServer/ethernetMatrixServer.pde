@@ -6,9 +6,6 @@
 #define START_OF_DATA 0x10
 #define END_OF_DATA 0x20
 
-#define PIN_RX 2
-#define PIN_TX 3
-
 static uint8_t mymac[6] = {0x54,0x55,0x58,0x10,0x00,0x24};
 static uint8_t myip[4]  = {192,168,1,15};
 
@@ -16,15 +13,11 @@ static uint8_t myip[4]  = {192,168,1,15};
 unsigned char buf[BUFFER_SIZE+1];
 uint16_t plen, data_p;
 
-SoftwareSerial lcd = SoftwareSerial(PIN_RX, PIN_TX);
 EtherShield es = EtherShield();
 
-void setup() {
+void setup() {  
   // Setup Serial
   Serial.begin(115200);
-
-  // Setup i2c bus
-  Wire.begin(1);
   
   // Setup Ethernet
   setupEthernet();
@@ -44,8 +37,6 @@ void loop() {
         // a ping packet, let's send pong
         es.ES_make_echo_reply_from_request (buf, plen);
       }
-      
-      Serial.println((int) buf[UDP_LEN_L_P]);
       
       if (buf[IP_PROTO_P] == IP_PROTO_UDP_V && buf[UDP_DST_PORT_H_P] == 4 && buf[UDP_DST_PORT_L_P] == 1
        && buf[UDP_LEN_L_P] == 104 && buf[UDP_LEN_H_P] == 0) {
