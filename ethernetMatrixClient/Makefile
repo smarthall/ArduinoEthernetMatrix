@@ -1,6 +1,6 @@
 UNAME := $(shell uname -s)
 CC := gcc
-CFLAGS := -Wall -pedantic -std=c99 -g -I/opt/local/include -L/opt/local/lib
+CFLAGS := -Wall -pedantic -std=c99 -g
 
 ifeq ($(UNAME),Darwin)
 	CFLAGS := $(CFLAGS) -I/opt/local/include -L/opt/local/lib
