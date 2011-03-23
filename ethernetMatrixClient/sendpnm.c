@@ -30,7 +30,7 @@ void twodots(uint8_t *value, int num1, int num2) {
 int main(int argc, char *argv[])
 {
   struct sockaddr_in si_other;
-  int s, i, slen=sizeof(si_other);
+  int s, slen=sizeof(si_other);
   uint8_t image[3][8][4];
   FILE *pamfile = NULL;
   struct pam inpam;
