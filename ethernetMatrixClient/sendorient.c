@@ -50,7 +50,7 @@ void diep(char *s)
 int main(void)
 {
   struct sockaddr_in si_other;
-  int s, i, slen=sizeof(si_other);
+  int s, slen=sizeof(si_other);
 
   if ((s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP))==-1)
     diep("socket");

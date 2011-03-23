@@ -94,7 +94,7 @@ void freeviewport(viewport image) {
 
 void sendimage(viewport image, char* srv_ip, int port) {
   struct sockaddr_in si_other;
-  int s, i, slen=sizeof(si_other);
+  int s, slen=sizeof(si_other);
 
   //Write to socket
   #ifdef DEBUG
