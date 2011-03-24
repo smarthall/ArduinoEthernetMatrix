@@ -3,7 +3,12 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <limits.h>
-#include <netpbm/pam.h>
+
+#ifdef __APPLE__
+  #include <pam.h>
+#else
+  #include <netpbm/pam.h>
+#endif
 
 #define VIEWPORT_SIZE (sizeof(uint8_t) * 96)
 typedef uint8_t* viewport;

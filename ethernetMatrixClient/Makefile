@@ -1,5 +1,10 @@
+UNAME := $(shell uname -s)
 CC := gcc
-CFLAGS := -Wall -pedantic -std=c99 -g 
+CFLAGS := -Wall -pedantic -std=c99 -g -I/opt/local/include -L/opt/local/lib
+
+ifeq ($(UNAME),Darwin)
+	CFLAGS := $(CFLAGS) -I/opt/local/include -L/opt/local/lib
+endif
 
 all: sendrandom sendinitial sendpnm sendletter sendblank sendorient sendstring slideanim
 
