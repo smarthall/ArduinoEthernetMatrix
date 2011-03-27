@@ -92,25 +92,29 @@ void setup() {
 //the mainloop - try to fetch data from the i2c bus and copy it into our buffer
 void loop() {
   if (Serial.available() > 0) {
+    byte data = Serial.read();
+    Serial.write(data);
+    
     switch (serial_state) {
       case STATE_WAITING:
-        if (Serial.read() == 0x46) serial_state = STATE_ADDRESS;
+        if (data == 0x46) serial_state = STATE_ADDRESS;
+        else 
         break;
       case STATE_ADDRESS:
-        address = Serial.read(); // TODO Check the message is for us
+        address = data; // TODO Check the message is for us
         serial_state = STATE_LENGTH;
         break;
       case STATE_LENGTH:
-        data_len = Serial.read();
+        data_len = data;
         data_read = 0;
         serial_state = STATE_DATA;
         break;
       case STATE_DATA:
-        buffer[!g_bufCurr][data_read++] = Serial.read();
+        buffer[!g_bufCurr][data_read++] = data;
         if (data_len == data_read) serial_state = STATE_CHECKSUM;
         break;
       case STATE_CHECKSUM:
-        checksum = Serial.read(); // TODO Check Checksum
+        checksum = data; // TODO Check Checksum
         g_swapNow = 1; // TODO Swap if checksum is good
         serial_state = STATE_WAITING;
         break;
