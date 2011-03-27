@@ -37,12 +37,14 @@ int main(int argc, char *argv[])
   struct sockaddr_in si_other;
   int s, slen=sizeof(si_other);
   uint8_t image[3][8][4];
+  uint8_t buffer[97];
   FILE *pamfile = NULL;
   struct pam inpam;
   tuple *tuplerow;
   unsigned int row;
 
   pamfile = pm_openr(argv[1]);
+  buffer[0] = strtol(argv[2], NULL, 10);
 
   pnm_readpaminit(pamfile, &inpam, PAM_STRUCT_SIZE(tuple_type));
 
@@ -86,7 +88,9 @@ int main(int argc, char *argv[])
     exit(1);
   }
 
-  if (sendto(s, image, sizeof(image), 0, (struct sockaddr *) &si_other, slen)==-1)
+  memcpy(buffer + 1, image, sizeof(uint8_t) * 96);
+
+  if (sendto(s, buffer, sizeof(buffer), 0, (struct sockaddr *) &si_other, slen)==-1)
     diep("sendto()");
 
   close(s);

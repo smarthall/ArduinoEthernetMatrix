@@ -10,11 +10,11 @@
   #include <netpbm/pam.h>
 #endif
 
-#define VIEWPORT_SIZE (sizeof(uint8_t) * 96)
+#define VIEWPORT_SIZE (sizeof(uint8_t) * 97)
 typedef uint8_t* viewport;
 
 /* Viewport management functions */
-viewport allocviewport();
+viewport allocviewport(uint8_t display);
 void freeviewport(viewport image);
 
 /* Viewport editing */

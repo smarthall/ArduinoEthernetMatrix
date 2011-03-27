@@ -30,8 +30,10 @@ int main(int argc, char *argv[])
   pm_close(pamfile);
   printf("done\n");
 
+  int senddisplay = strtol(argv[2], NULL, 10);
+
   // Make a viewport
-  display = allocviewport();
+  display = allocviewport(senddisplay);
 
   for (int xpos = 0; (xpos + 7) < inpam.width; xpos++) {
     // Convert from PAM to viewport

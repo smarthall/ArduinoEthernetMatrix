@@ -9,7 +9,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#define BUFLEN 96
+#define BUFLEN 97
 #define PORT 1025
 #define SRV_IP "192.168.1.15"
 
@@ -21,13 +21,15 @@ void diep(char *s)
   exit(1);
 }
 
-int main(void)
+int main(int argc, char *argv[])
 {
   struct sockaddr_in si_other;
   int s, slen=sizeof(si_other);
   char buf[BUFLEN];
 
   randomfile = fopen("/dev/urandom", "r");
+
+  buf[0] = strtol(argv[1], NULL, 10);
 
   if (randomfile == NULL) {
       exit(1);
@@ -44,7 +46,7 @@ int main(void)
     exit(1);
   }
 
-  fread(buf, sizeof(char), 96, randomfile);
+  fread(buf + 1, sizeof(char), 96, randomfile);
   if (sendto(s, buf, BUFLEN, 0, (struct sockaddr *) &si_other, slen)==-1)
     diep("sendto()");
 

@@ -65,8 +65,10 @@ int main(int argc, char *argv[])
     bitblit(memimage, i * 8, 0, fontimage, (ch - 32) * 8, 0, 8, 8);
   }
 
+  int senddisplay = strtol(argv[3], NULL, 10);
+
   // Make a viewport
-  display = allocviewport();
+  display = allocviewport(senddisplay);
 
   for (int xpos = 0; (xpos + 7) < mempam.width; xpos++) {
     // Convert from PAM to viewport

@@ -12,7 +12,9 @@
 #define PORT 1025
 #define SRV_IP "192.168.1.15"
 
-unsigned char buffer[96] = {
+unsigned char buffer[97] = {
+// Display number
+0x00,
 //green
 0x00, 0x00, 0x00, 0x00,
 0x00, 0x00, 0x00, 0x00,
@@ -47,10 +49,12 @@ void diep(char *s)
   exit(1);
 }
 
-int main(void)
+int main(int argc, char * argv[])
 {
   struct sockaddr_in si_other;
   int s, slen=sizeof(si_other);
+
+  buffer[0] = strtol(argv[1], NULL, 10);
 
   if ((s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP))==-1)
     diep("socket");

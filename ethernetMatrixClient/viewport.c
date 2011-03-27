@@ -20,8 +20,8 @@
 //#define DEBUG
 
 /* For accessing pixels in the viewport */
-#define INDEX(x,y,plane) (((x) / 2 ) + ((y) * 4) + ((plane) * 32))
-#define HILOW(x,y,plane) ((x) % 2)
+#define INDEX(x,y,plane) (1 + ((x) / 2 ) + ((y) * 4) + ((plane) * 32))
+#define HILOW(x,y,plane) (1 + (x) % 2)
 #define HINIBBLE(x) (x>>4)
 #define LONIBBLE(x) (x & 0x0F)
 #define COMBINE(h,l) (((h)<<4)+(l))
@@ -81,10 +81,11 @@ uint8_t getval(viewport image, uint8_t x, uint8_t y, uint8_t plane) {
 //void setpixel(viewport image, uint8_t x, uint8_t y, tuple val);
 //tuple getpixel(viewport image, uint8_t x, uint8_t y);
 
-viewport allocviewport() {
+viewport allocviewport(uint8_t display) {
   viewport newvp = NULL;
   if ((newvp = malloc(VIEWPORT_SIZE)) == NULL) return NULL;
   memset(newvp, 0, VIEWPORT_SIZE);
+  newvp[0] = display;
   return newvp;
 }
 

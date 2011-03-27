@@ -29,9 +29,10 @@ int main(int argc, char *argv[])
   pm_close(pamfile);
 
   int xpos = (argv[2][0] - 32) * 8;
+  int senddisplay = strtol(argv[3], NULL, 10);
 
   // Make a viewport
-  display = allocviewport();
+  display = allocviewport(senddisplay);
 
   // Convert from PAM to viewport
   for (int x = xpos; x < (xpos+8); x++) {
