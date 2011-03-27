@@ -108,7 +108,7 @@ void loop() {
       case STATE_ASSIGN:
         myaddress = data;
         Serial.write((byte)0x45);
-        Serial.write((byte)data++);
+        Serial.write((byte)++data);
         serial_state = STATE_WAITING;
         break;
       case STATE_ADDRESS:
