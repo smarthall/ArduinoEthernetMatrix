@@ -21,6 +21,13 @@ void setup() {
   
   // Setup Ethernet
   setupEthernet();
+  
+  // Wait for child rainbowduinos to come online
+  delay(4000);
+  
+  // Send the init command to the children
+  Serial.write((byte)0x45);
+  Serial.write((byte)0x00); // Start displays at 0
 }
 
 void loop() {
