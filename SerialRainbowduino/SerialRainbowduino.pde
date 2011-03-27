@@ -113,7 +113,11 @@ void loop() {
         break;
       case STATE_ADDRESS:
         address = data; // TODO Check the message is for us
-        serial_state = STATE_LENGTH;
+        if (address == myaddress) {
+          serial_state = STATE_LENGTH;
+        } else {
+          serial_state = STATE_WAITING;
+        }
         break;
       case STATE_LENGTH:
         data_len = data;
