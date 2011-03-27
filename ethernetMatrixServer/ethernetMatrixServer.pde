@@ -41,7 +41,7 @@ void loop() {
       if (buf[IP_PROTO_P] == IP_PROTO_UDP_V && buf[UDP_DST_PORT_H_P] == 4 && buf[UDP_DST_PORT_L_P] == 1
        && buf[UDP_LEN_L_P] == 104 && buf[UDP_LEN_H_P] == 0) {
         Serial.write((byte)0x46); // Start Code
-        Serial.write((buf[0]); // Address
+        Serial.write((buf[UDP_DATA_P]); // Address
         Serial.write((byte)0x60); // Data Length
         Serial.write(buf + UDP_DATA_P + 1, 96); // Data
         Serial.write((byte)0x00); // Checksum - Fake it till you make it :D
