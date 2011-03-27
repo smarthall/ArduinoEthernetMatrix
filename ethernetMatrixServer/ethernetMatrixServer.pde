@@ -18,6 +18,8 @@ static uint8_t myip[4]  = {192,168,1,15};
 // State
 uint8_t displaycount = 0;
 uint8_t serial_state = STATE_WAITING;
+uint8_t lockip       = {0,0,0,0};
+uint8_t locked       = 0;
 
 unsigned char buf[BUFFER_SIZE+1];
 uint16_t plen, data_p;
@@ -61,6 +63,11 @@ void loop() {
         Serial.write((byte)0x60); // Data Length
         Serial.write(buf + (UDP_DATA_P + 1), 96); // Data
         Serial.write((byte)0x00); // Checksum - Fake it till you make it :D
+      }
+      
+      if (buf[IP_PROTO_P] == IP_PROTO_UDP_V && buf[UDP_DST_PORT_H_P] == 4 && buf[UDP_DST_PORT_L_P] == 2
+       && buf[UDP_LEN_L_P] == 105 && buf[UDP_LEN_H_P] == 0) {
+         // Commands recieved here
       }
     }
   }
