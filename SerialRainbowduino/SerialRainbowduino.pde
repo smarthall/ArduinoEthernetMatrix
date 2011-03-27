@@ -44,9 +44,11 @@ A variable should be declared volatile whenever its value can be changed by some
 #define STATE_LENGTH    2
 #define STATE_DATA      3
 #define STATE_CHECKSUM  4
+#define STATE_ASSIGN    5
 
 int serial_state = STATE_WAITING;
 byte address, data_len, checksum, data_read;
+byte myaddress = 0x00;
 
 extern unsigned char buffer[2][96];  //two buffers (backbuffer and frontbuffer)
 
@@ -98,7 +100,14 @@ void loop() {
     switch (serial_state) {
       case STATE_WAITING:
         if (data == 0x46) serial_state = STATE_ADDRESS;
+        else if (data == 0x45) serial_state = STATE_ASSIGN
         else 
+        break;
+      case STATE_ASSIGN:
+        myaddress = data;
+        Serial.write((byte)0x45);
+        Serial.write((byte)data++);
+        serial_state = STATE_WAITING;
         break;
       case STATE_ADDRESS:
         address = data; // TODO Check the message is for us
