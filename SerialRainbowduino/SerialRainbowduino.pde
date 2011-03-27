@@ -99,9 +99,11 @@ void loop() {
     
     switch (serial_state) {
       case STATE_WAITING:
-        if (data == 0x46) serial_state = STATE_ADDRESS;
-        else if (data == 0x45) serial_state = STATE_ASSIGN
-        else 
+        if (data == 0x46) {
+          serial_state = STATE_ADDRESS;
+        } else if (data == 0x45) {
+          serial_state = STATE_ASSIGN;
+        }
         break;
       case STATE_ASSIGN:
         myaddress = data;
