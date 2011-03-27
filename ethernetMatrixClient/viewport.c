@@ -21,7 +21,7 @@
 
 /* For accessing pixels in the viewport */
 #define INDEX(x,y,plane) (1 + ((x) / 2 ) + ((y) * 4) + ((plane) * 32))
-#define HILOW(x,y,plane) (1 + (x) % 2)
+#define HILOW(x,y,plane) ((x) % 2)
 #define HINIBBLE(x) (x>>4)
 #define LONIBBLE(x) (x & 0x0F)
 #define COMBINE(h,l) (((h)<<4)+(l))
