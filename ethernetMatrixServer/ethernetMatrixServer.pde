@@ -3,13 +3,22 @@
 #include "WProgram.h"
 #include "etherShield.h"
 
-#define START_OF_DATA 0x10
-#define END_OF_DATA 0x20
+// Definitions
+#define FRAME_START 0x46
+#define INIT_START  0x45
+#define BUFFER_SIZE 250
 
+#define STATE_WAITING    0
+#define STATE_DISPCOUNT  1
+
+// Settings
 static uint8_t mymac[6] = {0x54,0x55,0x58,0x10,0x00,0x24};
 static uint8_t myip[4]  = {192,168,1,15};
 
-#define BUFFER_SIZE 250
+// State
+uint8_t displaycount = 0;
+uint8_t serial_state = STATE_WAITING;
+
 unsigned char buf[BUFFER_SIZE+1];
 uint16_t plen, data_p;
 
@@ -26,7 +35,7 @@ void setup() {
   delay(4000);
   
   // Send the init command to the children
-  Serial.write((byte)0x45);
+  Serial.write((byte)INIT_START);
   Serial.write((byte)0x00); // Start displays at 0
 }
 
@@ -47,7 +56,7 @@ void loop() {
       
       if (buf[IP_PROTO_P] == IP_PROTO_UDP_V && buf[UDP_DST_PORT_H_P] == 4 && buf[UDP_DST_PORT_L_P] == 1
        && buf[UDP_LEN_L_P] == 105 && buf[UDP_LEN_H_P] == 0) {
-        Serial.write((byte)0x46); // Start Code (for a frame)
+        Serial.write((byte)FRAME_START); // Start Code (for a frame)
         Serial.write(buf[UDP_DATA_P]); // Address
         Serial.write((byte)0x60); // Data Length
         Serial.write(buf + (UDP_DATA_P + 1), 96); // Data
@@ -56,7 +65,19 @@ void loop() {
     }
   }
   
-  
+  if (Serial.available() != 0) {
+    byte data = Serial.read();
+    
+    select (serial_state) {
+      case STATE_WAITING:
+        if (data == INIT_START) serial_state = STATE_DISPCOUNT;
+      break;
+      case STATE_DISPCOUNT:
+        displaycount = data;
+        serial_state = STATE_WAITING;
+      break;
+    }
+  }
 }
 
 /* ================================================ */
