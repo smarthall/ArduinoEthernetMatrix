@@ -57,7 +57,7 @@ void loop() {
       }
       
       if (buf[IP_PROTO_P] == IP_PROTO_UDP_V && buf[UDP_DST_PORT_H_P] == 4 && buf[UDP_DST_PORT_L_P] == 1
-       && buf[UDP_LEN_L_P] == 105 && buf[UDP_LEN_H_P] == 0) {
+       && buf[UDP_LEN_H_P] == 0 && buf[UDP_LEN_L_P] == 105 ) {
         Serial.write((byte)FRAME_START); // Start Code (for a frame)
         Serial.write(buf[UDP_DATA_P]); // Address
         Serial.write((byte)0x60); // Data Length
@@ -66,7 +66,7 @@ void loop() {
       }
       
       if (buf[IP_PROTO_P] == IP_PROTO_UDP_V && buf[UDP_DST_PORT_H_P] == 4 && buf[UDP_DST_PORT_L_P] == 2
-       && buf[UDP_LEN_L_P] == 105 && buf[UDP_LEN_H_P] == 0) {
+       && buf[UDP_LEN_H_P] == 0) {
          if (buf[UDP_DATA_P] == 'C') {
            // Send display count back
            es.ES_make_udp_reply_from_request(buf, &displaycount, sizeof(displaycount), 1025);
