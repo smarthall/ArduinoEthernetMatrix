@@ -67,7 +67,10 @@ void loop() {
       
       if (buf[IP_PROTO_P] == IP_PROTO_UDP_V && buf[UDP_DST_PORT_H_P] == 4 && buf[UDP_DST_PORT_L_P] == 2
        && buf[UDP_LEN_L_P] == 105 && buf[UDP_LEN_H_P] == 0) {
-         // Commands recieved here
+         if (buf[UDP_DATA_P] == 'C') {
+           // Send display count back
+           es.ES_make_udp_reply_from_request(buf, &displaycount, sizeof(displaycount), 1025);
+         }
       }
     }
   }
