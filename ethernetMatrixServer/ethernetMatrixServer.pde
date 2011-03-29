@@ -16,7 +16,7 @@ static uint8_t mymac[6] = {0x54,0x55,0x58,0x10,0x00,0x24};
 static uint8_t myip[4]  = {192,168,1,15};
 
 // State
-uint8_t displaycount = 5;
+uint8_t displaycount = 0;
 uint8_t serial_state = STATE_WAITING;
 uint8_t lockip[]     = {0,0,0,0};
 uint8_t locked       = 0;
