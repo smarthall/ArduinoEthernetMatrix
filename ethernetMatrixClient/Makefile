@@ -36,7 +36,7 @@ countdisplays: countdisplays.c
 	$(CC) $(CFLAGS) countdisplays.c -o countdisplays
 
 clean:
-	- rm -f sendrandom sendinitial sendpnm sendletter sendblank sendorient sendstring slideanim
+	- rm -f sendrandom sendinitial sendpnm sendletter sendblank sendorient sendstring slideanim countdisplays
 ifeq ($(UNAME),Darwin)
 	- rm -rf *.dSYM
 endif
