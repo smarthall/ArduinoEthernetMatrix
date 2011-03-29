@@ -18,7 +18,7 @@ static uint8_t myip[4]  = {192,168,1,15};
 // State
 uint8_t displaycount = 0;
 uint8_t serial_state = STATE_WAITING;
-uint8_t lockip       = {0,0,0,0};
+uint8_t lockip[]     = {0,0,0,0};
 uint8_t locked       = 0;
 
 unsigned char buf[BUFFER_SIZE+1];
@@ -78,7 +78,7 @@ void loop() {
   if (Serial.available() != 0) {
     byte data = Serial.read();
     
-    select (serial_state) {
+    switch (serial_state) {
       case STATE_WAITING:
         if (data == INIT_START) serial_state = STATE_DISPCOUNT;
       break;
