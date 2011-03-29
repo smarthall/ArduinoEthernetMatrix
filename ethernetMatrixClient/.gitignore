@@ -6,4 +6,5 @@ sendpnm
 sendrandom
 sendstring
 slideanim
+countdisplays
 *.swp

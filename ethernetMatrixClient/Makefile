@@ -6,7 +6,7 @@ ifeq ($(UNAME),Darwin)
 	CFLAGS := $(CFLAGS) -I/opt/local/include -L/opt/local/lib
 endif
 
-all: sendrandom sendinitial sendpnm sendletter sendblank sendorient sendstring slideanim
+all: sendrandom sendinitial sendpnm sendletter sendblank sendorient sendstring slideanim countdisplays
 
 sendrandom: sendrandom.c
 	$(CC) $(CFLAGS) sendrandom.c -o sendrandom
@@ -31,6 +31,9 @@ sendstring: sendstring.c viewport.c viewport.h
 
 slideanim: slideanim.c viewport.c viewport.h
 	$(CC) $(CFLAGS) -lnetpbm slideanim.c viewport.c -o slideanim
+
+countdisplays: countdisplays.c
+	$(CC) $(CFLAGS) countdisplays.c -o countdisplays
 
 clean:
 	rm sendrandom sendinitial sendpnm sendletter sendblank sendorient sendstring slideanim
