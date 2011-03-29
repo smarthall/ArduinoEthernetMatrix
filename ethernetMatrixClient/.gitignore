@@ -8,3 +8,4 @@ sendstring
 slideanim
 countdisplays
 *.swp
+*.dSYM
