@@ -7,9 +7,12 @@
 #define FRAME_START 0x46
 #define INIT_START  0x45
 #define BUFFER_SIZE 250
+#define SENDBUF_LEN 5
 
 #define STATE_WAITING    0
 #define STATE_DISPCOUNT  1
+
+#define INDICATOR_PIN    7
 
 // Settings
 static uint8_t mymac[6] = {0x54,0x55,0x58,0x10,0x00,0x24};
@@ -21,12 +24,19 @@ uint8_t serial_state = STATE_WAITING;
 uint8_t lockip[]     = {0,0,0,0};
 uint8_t locked       = 0;
 
-unsigned char buf[BUFFER_SIZE+1];
+unsigned long ledoff = 0; // Time to turn off the indicator
+
+uint8_t buf[BUFFER_SIZE+1];
+uint8_t sendbuf[SENDBUF_LEN];
 uint16_t plen, data_p;
 
 EtherShield es = EtherShield();
 
-void setup() {  
+void setup() {
+  // Set the indicator light
+  pinMode(INDICATOR_PIN, OUTPUT);
+  digitalWrite(INDICATOR_PIN, HIGH);
+  
   // Setup Serial
   Serial.begin(115200);
   
@@ -58,18 +68,22 @@ void loop() {
       
       if (buf[IP_PROTO_P] == IP_PROTO_UDP_V && buf[UDP_DST_PORT_H_P] == 4 && buf[UDP_DST_PORT_L_P] == 1
        && buf[UDP_LEN_H_P] == 0 && buf[UDP_LEN_L_P] == 105 ) {
+        digitalWrite(INDICATOR_PIN, HIGH);
         Serial.write((byte)FRAME_START); // Start Code (for a frame)
         Serial.write(buf[UDP_DATA_P]); // Address
         Serial.write((byte)0x60); // Data Length
         Serial.write(buf + (UDP_DATA_P + 1), 96); // Data
         Serial.write((byte)0x00); // Checksum - Fake it till you make it :D
+        digitalWrite(INDICATOR_PIN, LOW);
       }
       
       if (buf[IP_PROTO_P] == IP_PROTO_UDP_V && buf[UDP_DST_PORT_H_P] == 4 && buf[UDP_DST_PORT_L_P] == 2
        && buf[UDP_LEN_H_P] == 0) {
          if (buf[UDP_DATA_P] == 'C') {
            // Send display count back
-           es.ES_make_udp_reply_from_request(buf, &displaycount, sizeof(displaycount), 1025);
+           sendbuf[0] = 'C';
+           sendbuf[1] = displaycount;
+           es.ES_make_udp_reply_from_request(buf, sendbuf, sizeof(uint8_t) * 2, 1026);
          }
       }
     }
@@ -85,6 +99,7 @@ void loop() {
       case STATE_DISPCOUNT:
         displaycount = data;
         serial_state = STATE_WAITING;
+        digitalWrite(INDICATOR_PIN, LOW);
       break;
     }
   }
