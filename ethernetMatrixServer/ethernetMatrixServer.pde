@@ -8,6 +8,7 @@
 #define INIT_START  0x45
 #define BUFFER_SIZE 250
 #define SENDBUF_LEN 5
+#define SCAN_INTERVAL 1000
 
 #define STATE_WAITING    0
 #define STATE_DISPCOUNT  1
@@ -25,6 +26,7 @@ uint8_t lockip[]     = {0,0,0,0};
 uint8_t locked       = 0;
 
 unsigned long ledoff = 0; // Time to turn off the indicator
+unsigned long nextScan = 0;
 
 uint8_t buf[BUFFER_SIZE+1];
 uint8_t sendbuf[SENDBUF_LEN];
@@ -42,13 +44,6 @@ void setup() {
   
   // Setup Ethernet
   setupEthernet();
-  
-  // Wait for child rainbowduinos to come online
-  delay(4000);
-  
-  // Send the init command to the children
-  Serial.write((byte)INIT_START);
-  Serial.write((byte)0x00); // Start displays at 0
 }
 
 void loop() {
@@ -102,6 +97,13 @@ void loop() {
         digitalWrite(INDICATOR_PIN, LOW);
       break;
     }
+  }
+  
+  if ((displaycount == 0) && (nextScan < millis())) {   
+    // Send the init command to the children
+    Serial.write((byte)INIT_START);
+    Serial.write((byte)0x00); // Start displays at 0
+    nextScan = millis() + SCAN_INTERVAL;
   }
 }
 
