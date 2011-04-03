@@ -8,7 +8,7 @@
 #define INIT_START  0x45
 #define BUFFER_SIZE 250
 #define SENDBUF_LEN 5
-#define SCAN_INTERVAL 1000
+#define SCAN_INTERVAL 500
 
 #define STATE_WAITING    0
 #define STATE_DISPCOUNT  1
