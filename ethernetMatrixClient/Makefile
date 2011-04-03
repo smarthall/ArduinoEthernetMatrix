@@ -8,6 +8,9 @@ endif
 
 all: sendrandom sendinitial sendpnm sendletter sendblank sendorient sendstring slideanim countdisplays
 
+viewport.o: viewport.c viewport.h
+	$(CC) $(CFLAGS) -c viewport.c -o viewport.o
+
 sendrandom: sendrandom.c
 	$(CC) $(CFLAGS) sendrandom.c -o sendrandom
 
@@ -23,20 +26,21 @@ sendorient: sendorient.c
 sendpnm: sendpnm.c
 	$(CC) $(CFLAGS) -lnetpbm sendpnm.c -o sendpnm
 
-sendletter: sendletter.c viewport.c viewport.h
-	$(CC) $(CFLAGS) -lnetpbm sendletter.c viewport.c -o sendletter
+sendletter: sendletter.c viewport.o
+	$(CC) $(CFLAGS) -lnetpbm sendletter.c viewport.o -o sendletter
 
-sendstring: sendstring.c viewport.c viewport.h
-	$(CC) $(CFLAGS) -lnetpbm sendstring.c viewport.c -o sendstring
+sendstring: sendstring.c viewport.o
+	$(CC) $(CFLAGS) -lnetpbm sendstring.c viewport.o -o sendstring
 
-slideanim: slideanim.c viewport.c viewport.h
-	$(CC) $(CFLAGS) -lnetpbm slideanim.c viewport.c -o slideanim
+slideanim: slideanim.c viewport.o
+	$(CC) $(CFLAGS) -lnetpbm slideanim.c viewport.o -o slideanim
 
 countdisplays: countdisplays.c
 	$(CC) $(CFLAGS) countdisplays.c -o countdisplays
 
 clean:
 	- rm -f sendrandom sendinitial sendpnm sendletter sendblank sendorient sendstring slideanim countdisplays
+	- rm -f viewport.o
 ifeq ($(UNAME),Darwin)
 	- rm -rf *.dSYM
 endif
