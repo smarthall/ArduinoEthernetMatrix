@@ -25,6 +25,7 @@ int main(int argc, char *argv[])
   struct sockaddr_in si_other, si_me;
   int s, slen=sizeof(si_other);
   uint8_t data = 'C';
+  uint8_t recvbuf[10];
 
   // Create a socket that uses UDP datagrams
   if ((s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP))==-1)
@@ -52,6 +53,13 @@ int main(int argc, char *argv[])
   // Send the packet
   if (sendto(s, &data, sizeof(data), 0, (struct sockaddr *) &si_other, slen)==-1)
     diep("sendto()");
+
+  // Get response
+  recvbuf[0] = '\0';
+  while (recvbuf[0] != 'C') recvfrom(s, &recvbuf, 10, 0, NULL, 0);
+
+  // Tell the user
+  printf("Displays: %d\n", recvbuf[1]);
 
   // Close the socket
   close(s);
