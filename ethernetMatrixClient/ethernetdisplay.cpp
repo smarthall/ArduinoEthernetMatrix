@@ -35,7 +35,6 @@ EthernetDisplay::EthernetDisplay(std::string address, int port)
     // TODO: Split the constructor into a few parts
     //Packet data
     char databuffer[BUFFERSIZE] = {'C', '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'};
-    int slen = sizeof(si_other);
   
     // Init variables
     displayCount = 0;
@@ -64,7 +63,7 @@ EthernetDisplay::EthernetDisplay(std::string address, int port)
     
     // TODO: Abstract the sending of commands
     // Send the packet
-    if (sendto(socket_h, databuffer, sizeof(char), 0, (struct sockaddr *) &si_other, slen)==-1)
+    if (sendto(socket_h, databuffer, sizeof(char), 0, (struct sockaddr *) &si_other, sizeof(si_other))==-1)
      throw "Error sending packet";
     
     // Get response
