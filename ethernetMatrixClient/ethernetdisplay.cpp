@@ -34,7 +34,7 @@ EthernetDisplay::EthernetDisplay(std::string address, int port)
 {
     //Packet data
     char databuffer[BUFFERSIZE] = {'C', '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'};
-    int slen = 1;
+    int slen = sizeof(si_other);
   
     // Init variables
     displayCount = 0;
