@@ -1,6 +1,8 @@
 UNAME := $(shell uname -s)
 CC := gcc
 CFLAGS := -Wall -pedantic -std=c99 -g
+CPPFLAGS := -Wall -pedantic -g
+LDFLAGS := -lstdc++
 
 ifeq ($(UNAME),Darwin)
 	CFLAGS := $(CFLAGS) -I/opt/local/include -L/opt/local/lib
@@ -35,12 +37,20 @@ sendstring: sendstring.c viewport.o
 slideanim: slideanim.c viewport.o
 	$(CC) $(CFLAGS) -lnetpbm slideanim.c viewport.o -o slideanim
 
-countdisplays: countdisplays.c
-	$(CC) $(CFLAGS) countdisplays.c -o countdisplays
+
+# C++ Programs
+ethernetdisplay.o: ethernetdisplay.cpp ethernetdisplay.h
+	$(CC) $(CPPFLAGS) -c ethernetdisplay.cpp -o ethernetdisplay.o
+
+countdisplays.o: countdisplays.cpp
+	$(CC) $(CPPFLAGS) -c countdisplays.cpp -o countdisplays.o
+
+countdisplays: countdisplays.o ethernetdisplay.o
+	$(CC) $(LDFLAGS) countdisplays.o ethernetdisplay.o -o countdisplays
 
 clean:
 	- rm -f sendrandom sendinitial sendpnm sendletter sendblank sendorient sendstring slideanim countdisplays
-	- rm -f viewport.o
+	- rm -f *.o
 ifeq ($(UNAME),Darwin)
 	- rm -rf *.dSYM
 endif

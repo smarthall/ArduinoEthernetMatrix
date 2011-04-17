@@ -17,10 +17,10 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-
 #include "ethernetdisplay.h"
 
 //Dependencies
+#include <stdlib.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -30,7 +30,7 @@
 #define LISTEN_PORT 1026
 #define BUFFERSIZE 10
 
-EthernetDisplay::EthernetDisplay(char *address, int port)
+EthernetDisplay::EthernetDisplay(std::string address, int port)
 {
     //Packet data
     char databuffer[BUFFERSIZE] = {'C', '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'};
@@ -38,16 +38,17 @@ EthernetDisplay::EthernetDisplay(char *address, int port)
   
     // Init variables
     displayCount = 0;
+    viewports = NULL;
     
     // Create a socket
-    if ((socket=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP))==-1)
+    if ((socket_h=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP))==-1)
       throw "Could not create socket";
     
     // Machine we are sending to
     memset((char *) &si_other, 0, sizeof(si_other));
     si_other.sin_family = AF_INET;
     si_other.sin_port = htons(LISTEN_PORT);
-    if (inet_aton(address, &si_other.sin_addr)==0)
+    if (inet_aton(address.c_str(), &si_other.sin_addr)==0)
       throw "inet_aton() failed";
     
     // Address to listen on
@@ -57,16 +58,16 @@ EthernetDisplay::EthernetDisplay(char *address, int port)
     si_me.sin_addr.s_addr = htonl(INADDR_ANY);
     
     // Bind the socket
-    if (bind(socket,(struct sockaddr*) &si_me, sizeof(si_me))==-1)
+    if (bind(socket_h,(struct sockaddr*) &si_me, sizeof(si_me))==-1)
       throw "Error binding socket";
     
     // Send the packet
-    if (sendto(socket, databuffer, sizeof(char), 0, (struct sockaddr *) &si_other, slen)==-1)
+    if (sendto(socket_h, databuffer, sizeof(char), 0, (struct sockaddr *) &si_other, slen)==-1)
      throw "Error sending packet";
     
     // Get response
     databuffer[0] = '\0';
-    while (databuffer[0] != 'C') recvfrom(socket, databuffer, BUFFERSIZE, 0, NULL, 0);
+    while (databuffer[0] != 'C') recvfrom(socket_h, databuffer, BUFFERSIZE, 0, NULL, 0);
     
     // Store the number of displays
     displayCount = databuffer[1];
@@ -74,7 +75,7 @@ EthernetDisplay::EthernetDisplay(char *address, int port)
 
 EthernetDisplay::~EthernetDisplay()
 {
-    close(socket);
+    close(socket_h);
 }
 
 int EthernetDisplay::getDisplayCount() {
