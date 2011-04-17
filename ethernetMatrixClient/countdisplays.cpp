@@ -10,10 +10,16 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-  EthernetDisplay e = EthernetDisplay(SRV_IP, PORT);
-  
-  // Tell the user
-  printf("Displays: %d\n", e.getDisplayCount());
+  try {
+    EthernetDisplay e = EthernetDisplay(SRV_IP, PORT);
+    
+    // Tell the user
+    printf("Displays: %d\n", e.getDisplayCount());
+    
+  } catch (const char *errmsg) {
+    std::cerr << "Ethernet Matrix Error: " << errmsg << "\n";
+    return EXIT_FAILURE;
+  }
   
   return EXIT_SUCCESS;
 }
