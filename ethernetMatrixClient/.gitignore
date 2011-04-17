@@ -7,7 +7,7 @@ sendrandom
 sendstring
 slideanim
 countdisplays
-viewport.o
+*.o
 *.swp
 *.dSYM
 *~
