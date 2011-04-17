@@ -32,6 +32,7 @@
 
 EthernetDisplay::EthernetDisplay(std::string address, int port)
 {
+    // TODO: Split the constructor into a few parts
     //Packet data
     char databuffer[BUFFERSIZE] = {'C', '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'};
     int slen = sizeof(si_other);
@@ -61,11 +62,14 @@ EthernetDisplay::EthernetDisplay(std::string address, int port)
     if (bind(socket_h,(struct sockaddr*) &si_me, sizeof(si_me))==-1)
       throw "Error binding socket";
     
+    // TODO: Abstract the sending of commands
     // Send the packet
     if (sendto(socket_h, databuffer, sizeof(char), 0, (struct sockaddr *) &si_other, slen)==-1)
      throw "Error sending packet";
     
     // Get response
+    // TODO: Timeout after a few seconds
+    // TODO: Abstract out the recieving of commands
     databuffer[0] = '\0';
     while (databuffer[0] != 'C') recvfrom(socket_h, databuffer, BUFFERSIZE, 0, NULL, 0);
     
@@ -84,6 +88,7 @@ int EthernetDisplay::getDisplayCount() {
 
 bool EthernetDisplay::operator==(const EthernetDisplay& other) const
 {
+    // TODO: Compare the address and port
     return true;
 }
 
