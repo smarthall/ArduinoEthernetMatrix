@@ -29,6 +29,7 @@
 
 #define LISTEN_PORT 1026
 #define BUFFERSIZE 10
+#define DISPLAYSIZE 96
 
 EthernetDisplay::EthernetDisplay(std::string address, int port)
 {
@@ -74,10 +75,27 @@ EthernetDisplay::EthernetDisplay(std::string address, int port)
     
     // Store the number of displays
     displayCount = databuffer[1];
+
+    // Setup viewports
+    viewports = (uint8_t **) malloc(sizeof(uint8_t*) * displayCount);
+    for (int i = 0; i < displayCount; i++) {
+        viewports[i] = (uint8_t*) malloc(sizeof(uint8_t) * DISPLAYSIZE);
+    }
+
+    // Calculate coordinates
+    y = 8;
+    x = 8 * displayCount;
 }
 
 EthernetDisplay::~EthernetDisplay()
 {
+    // Free the viewports
+    for (int i = 0; i < displayCount; i++) {
+        free(viewports[i]);
+    }
+    free(viewports);
+
+    // Close the socket
     close(socket_h);
 }
 
@@ -91,4 +109,11 @@ bool EthernetDisplay::operator==(const EthernetDisplay& other) const
     return true;
 }
 
+int EthernetDisplay::getXSize() {
+    return x;
+}
+
+int EthernetDisplay::getYSize() {
+    return y;
+}
 

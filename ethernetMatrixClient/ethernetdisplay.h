@@ -24,7 +24,6 @@
 #include <stdint.h>
 #include <netinet/in.h>
 
-#include <iostream>
 #include <cstring>
 #include <string>
 
@@ -32,12 +31,16 @@ class EthernetDisplay {
     uint8_t **viewports;
     int socket_h, displayCount;
     struct sockaddr_in si_other, si_me;
+    int x, y;
     
   public:
     EthernetDisplay(std::string address, int port);
     virtual ~EthernetDisplay();
     virtual bool operator==(const EthernetDisplay& other) const;
+    
     int getDisplayCount();
+    int getXSize();
+    int getYSize();
 };
 
 #endif // ETHERNETDISPLAY_H
