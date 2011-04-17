@@ -24,13 +24,19 @@
 class EthernetDisplay
 {
 private:
+    // Private Variables
     uint8_t **viewports = NULL;
     int socket, displayCount;
     struct sockaddr_in si_other, si_me;
+    int socket; //Socket
+    
+    //Private Methods
 public:
+    // Public Methods
     EthernetDisplay(char* address, int port);
     virtual ~EthernetDisplay();
     virtual bool operator==(const EthernetDisplay& other) const;
+    int getDisplayCount();
 };
 
 #endif // ETHERNETDISPLAY_H
