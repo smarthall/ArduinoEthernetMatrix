@@ -1,0 +1,8 @@
+[Launch]
+Launch Configurations=
+
+[MakeBuilder]
+Number Of Jobs=1
+
+[Project]
+VersionControlSupport=kdevgit
