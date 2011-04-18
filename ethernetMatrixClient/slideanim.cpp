@@ -5,12 +5,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
-
-#ifdef __APPLE__
-  #include <pam.h>
-#else
-  #include <netpbm/pam.h>
-#endif
+#include <netpbm/pam.h>
 
 #include "ethernetdisplay.h"
 
