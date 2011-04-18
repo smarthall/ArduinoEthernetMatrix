@@ -10,12 +10,7 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <unistd.h>
-
-#ifdef __APPLE__
-  #include <pam.h>
-#else
-  #include <netpbm/pam.h>
-#endif
+#include <netpbm/pam.h>
 
 #define PORT 1025
 #define SRV_IP "192.168.1.15"
