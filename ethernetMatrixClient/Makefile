@@ -6,6 +6,8 @@ LDFLAGS := -lstdc++ -lnetpbm
 
 ifeq ($(UNAME),Darwin)
 	CFLAGS := $(CFLAGS) -I/opt/local/include -L/opt/local/lib
+	CPPFLAGS := $(CPPFLAGS) -I/opt/local/include
+	LDFLAGS := $(LDFLAGS) -L/opt/local/lib
 endif
 
 all: sendrandom sendinitial sendpnm sendletter sendblank sendorient sendstring slideanim countdisplays displayinfo
@@ -34,7 +36,7 @@ sendletter: sendletter.c viewport.o
 sendstring: sendstring.c viewport.o
 	$(CC) $(CFLAGS) -lnetpbm sendstring.c viewport.o -o sendstring
 
-# C++ Programs
+# Compile C++ Programs
 ethernetdisplay.o: ethernetdisplay.cpp ethernetdisplay.h
 	$(CC) $(CPPFLAGS) -c ethernetdisplay.cpp -o ethernetdisplay.o
 
@@ -47,6 +49,7 @@ displayinfo.o: displayinfo.cpp
 slideanim.o: slideanim.cpp
 	$(CC) $(CPPFLAGS) -c slideanim.cpp -o slideanim.o
 
+# Link C++ Programs
 countdisplays: countdisplays.o ethernetdisplay.o
 	$(CC) $(LDFLAGS) countdisplays.o ethernetdisplay.o -o countdisplays
 
