@@ -8,7 +8,7 @@ ifeq ($(UNAME),Darwin)
 	CFLAGS := $(CFLAGS) -I/opt/local/include -L/opt/local/lib
 endif
 
-all: sendrandom sendinitial sendpnm sendletter sendblank sendorient sendstring slideanim countdisplays
+all: sendrandom sendinitial sendpnm sendletter sendblank sendorient sendstring slideanim countdisplays displayinfo
 
 viewport.o: viewport.c viewport.h
 	$(CC) $(CFLAGS) -c viewport.c -o viewport.o
@@ -45,11 +45,17 @@ ethernetdisplay.o: ethernetdisplay.cpp ethernetdisplay.h
 countdisplays.o: countdisplays.cpp
 	$(CC) $(CPPFLAGS) -c countdisplays.cpp -o countdisplays.o
 
+displayinfo.o: displayinfo.cpp
+	$(CC) $(CPPFLAGS) -c displayinfo.cpp -o displayinfo.o
+
 countdisplays: countdisplays.o ethernetdisplay.o
 	$(CC) $(LDFLAGS) countdisplays.o ethernetdisplay.o -o countdisplays
 
+displayinfo: displayinfo.o ethernetdisplay.o
+	$(CC) $(LDFLAGS) displayinfo.o ethernetdisplay.o -o displayinfo
+
 clean:
-	- rm -f sendrandom sendinitial sendpnm sendletter sendblank sendorient sendstring slideanim countdisplays
+	- rm -f sendrandom sendinitial sendpnm sendletter sendblank sendorient sendstring slideanim countdisplays displayinfo
 	- rm -f *.o
 ifeq ($(UNAME),Darwin)
 	- rm -rf *.dSYM
