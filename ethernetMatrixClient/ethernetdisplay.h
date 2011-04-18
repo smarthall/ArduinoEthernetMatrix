@@ -35,11 +35,11 @@
 class EthernetDisplay {
     uint8_t **viewports;
     int socket_h, displayCount;
-    struct sockaddr_in si_other, si_me;
+    struct sockaddr_in si_control, si_img, si_me;
     int x, y;
     
   public:
-    EthernetDisplay(std::string address, int port);
+    EthernetDisplay(std::string address);
     virtual ~EthernetDisplay();
     virtual bool operator==(const EthernetDisplay& other) const;
     

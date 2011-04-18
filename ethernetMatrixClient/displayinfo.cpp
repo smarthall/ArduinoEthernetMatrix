@@ -3,7 +3,6 @@
 
 #include "ethernetdisplay.h"
 
-#define PORT 1026
 #define SRV_IP "192.168.1.15"
 
 using namespace std;
@@ -13,7 +12,7 @@ using namespace std;
 int main(int argc, char *argv[])
 {
   try {
-    EthernetDisplay e = EthernetDisplay(SRV_IP, PORT);
+    EthernetDisplay e = EthernetDisplay(SRV_IP);
     
     // Tell the user
     printf("Geometry: (%d, %d)\n", e.getXSize(), e.getYSize());

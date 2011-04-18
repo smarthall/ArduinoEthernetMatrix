@@ -1,5 +1,3 @@
-#define _GNU_SOURCE
-
 #include <stdlib.h>
 #include <stdint.h>
 #include <limits.h>
@@ -14,14 +12,20 @@
   #include <netpbm/pam.h>
 #endif
 
-#include "viewport.h"
+#include "ethernetdisplay.h"
+
+#define SRV_IP "192.168.1.15"
+
+using namespace std;
+
+#include <iostream>
 
 int main(int argc, char *argv[])
 {
   FILE *pamfile = NULL;
   struct pam inpam;
   tuple **fontimage;
-  viewport display;
+  EthernetDisplay e = EthernetDisplay(SRV_IP);
 
   // Read font
   printf("Reading Font... ");
@@ -30,32 +34,26 @@ int main(int argc, char *argv[])
   pm_close(pamfile);
   printf("done\n");
 
-  int senddisplay = strtol(argv[2], NULL, 10);
-
-  // Make a viewport
-  display = allocviewport(senddisplay);
-
-  for (int xpos = 0; (xpos + 7) < inpam.width; xpos++) {
+  for (int xpos = 0; (xpos + e.getXSize() - 1) < inpam.width; xpos++) {
     // Convert from PAM to viewport
-    for (int x = xpos; x < (xpos+8); x++) {
+    for (int x = xpos; x < (xpos + e.getXSize()); x++) {
       for (int y = 0; y < 8; y++) {
-        setval(display, x - xpos, y, 0, fontimage[y][x][0]);
-        setval(display, x - xpos, y, 1, fontimage[y][x][1]);
-        setval(display, x - xpos, y, 2, fontimage[y][x][2]);
+        e.setval(x - xpos, y, 0, fontimage[y][x][0]);
+        e.setval(x - xpos, y, 1, fontimage[y][x][1]);
+        e.setval(x - xpos, y, 2, fontimage[y][x][2]);
       }
     }
 
     // Send to Arduino
-    sendimage(display, "192.168.1.15", 1025);
+    e.sync();
 
     // Pause between frames
     usleep(70000);
   }
 
   // Free up stuff
-  freeviewport(display);
   pnm_freepamarray( fontimage, &inpam );
 
-  return 0;
+  return EXIT_SUCCESS;
 }
 

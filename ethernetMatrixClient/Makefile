@@ -2,7 +2,7 @@ UNAME := $(shell uname -s)
 CC := gcc
 CFLAGS := -Wall -pedantic -std=c99 -g
 CPPFLAGS := -Wall -pedantic -g
-LDFLAGS := -lstdc++
+LDFLAGS := -lstdc++ -lnetpbm
 
 ifeq ($(UNAME),Darwin)
 	CFLAGS := $(CFLAGS) -I/opt/local/include -L/opt/local/lib
@@ -34,10 +34,6 @@ sendletter: sendletter.c viewport.o
 sendstring: sendstring.c viewport.o
 	$(CC) $(CFLAGS) -lnetpbm sendstring.c viewport.o -o sendstring
 
-slideanim: slideanim.c viewport.o
-	$(CC) $(CFLAGS) -lnetpbm slideanim.c viewport.o -o slideanim
-
-
 # C++ Programs
 ethernetdisplay.o: ethernetdisplay.cpp ethernetdisplay.h
 	$(CC) $(CPPFLAGS) -c ethernetdisplay.cpp -o ethernetdisplay.o
@@ -48,11 +44,17 @@ countdisplays.o: countdisplays.cpp
 displayinfo.o: displayinfo.cpp
 	$(CC) $(CPPFLAGS) -c displayinfo.cpp -o displayinfo.o
 
+slideanim.o: slideanim.cpp
+	$(CC) $(CPPFLAGS) -c slideanim.cpp -o slideanim.o
+
 countdisplays: countdisplays.o ethernetdisplay.o
 	$(CC) $(LDFLAGS) countdisplays.o ethernetdisplay.o -o countdisplays
 
 displayinfo: displayinfo.o ethernetdisplay.o
 	$(CC) $(LDFLAGS) displayinfo.o ethernetdisplay.o -o displayinfo
+
+slideanim: slideanim.o ethernetdisplay.o
+	$(CC) $(LDFLAGS) slideanim.o ethernetdisplay.o -o slideanim
 
 clean:
 	- rm -f sendrandom sendinitial sendpnm sendletter sendblank sendorient sendstring slideanim countdisplays displayinfo

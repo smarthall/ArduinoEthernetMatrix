@@ -27,7 +27,8 @@
 #include <unistd.h>
 #include <string.h>
 
-#define LISTEN_PORT 1026
+#define CONTROL_PORT 1026
+#define IMG_PORT 1025
 #define BUFFERSIZE 10
 #define DISPLAYSIZE 97
 
@@ -50,7 +51,7 @@
 /* PC -> Arduino Plane LUT */
 const uint8_t planelut[] = {AR_RED, AR_GREEN, AR_BLUE};
 
-EthernetDisplay::EthernetDisplay(std::string address, int port)
+EthernetDisplay::EthernetDisplay(std::string address)
 {
     // TODO: Split the constructor into a few parts
     //Packet data
@@ -64,17 +65,24 @@ EthernetDisplay::EthernetDisplay(std::string address, int port)
     if ((socket_h=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP))==-1)
       throw "Could not create socket";
     
-    // Machine we are sending to
-    memset((char *) &si_other, 0, sizeof(si_other));
-    si_other.sin_family = AF_INET;
-    si_other.sin_port = htons(LISTEN_PORT);
-    if (inet_aton(address.c_str(), &si_other.sin_addr)==0)
+    // Sending control data to
+    memset((char *) &si_control, 0, sizeof(si_control));
+    si_control.sin_family = AF_INET;
+    si_control.sin_port = htons(CONTROL_PORT);
+    if (inet_aton(address.c_str(), &si_control.sin_addr)==0)
+      throw "inet_aton() failed";
+    
+    // Sending images to
+    memset((char *) &si_img, 0, sizeof(si_img));
+    si_img.sin_family = AF_INET;
+    si_img.sin_port = htons(IMG_PORT);
+    if (inet_aton(address.c_str(), &si_img.sin_addr)==0)
       throw "inet_aton() failed";
     
     // Address to listen on
     memset((char *) &si_me, 0, sizeof(si_me));
     si_me.sin_family = AF_INET;
-    si_me.sin_port = htons(LISTEN_PORT);
+    si_me.sin_port = htons(CONTROL_PORT);
     si_me.sin_addr.s_addr = htonl(INADDR_ANY);
     
     // Bind the socket
@@ -83,7 +91,9 @@ EthernetDisplay::EthernetDisplay(std::string address, int port)
     
     // TODO: Abstract the sending of commands
     // Send the packet
-    if (sendto(socket_h, databuffer, sizeof(char), 0, (struct sockaddr *) &si_other, sizeof(si_other))==-1)
+    if (sendto(socket_h, databuffer, sizeof(char), 0, (struct sockaddr *) &si_control
+, sizeof(si_control
+))==-1)
      throw "Error sending packet";
     
     // Get response
@@ -99,6 +109,7 @@ EthernetDisplay::EthernetDisplay(std::string address, int port)
     viewports = (uint8_t **) malloc(sizeof(uint8_t*) * displayCount);
     for (int i = 0; i < displayCount; i++) {
         viewports[i] = (uint8_t*) malloc(sizeof(uint8_t) * DISPLAYSIZE);
+	viewports[i][0] = displayCount - i - 1;
     }
 
     // Calculate coordinates
@@ -171,7 +182,7 @@ void EthernetDisplay::sync() {
 }
 
 void EthernetDisplay::sync(int display) {
-    if (sendto(socket_h, viewports[display], DISPLAYSIZE, 0, (struct sockaddr *) &si_other, sizeof(si_other))==-1)
+    if (sendto(socket_h, viewports[display], DISPLAYSIZE, 0, (struct sockaddr *) &si_img, sizeof(si_img))==-1)
       return;
 }
 
