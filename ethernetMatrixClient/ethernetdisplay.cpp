@@ -29,7 +29,26 @@
 
 #define LISTEN_PORT 1026
 #define BUFFERSIZE 10
-#define DISPLAYSIZE 96
+#define DISPLAYSIZE 97
+
+/* For accessing pixels in the viewport */
+#define INDEX(x,y,plane) (1 + ((x) / 2 ) + ((y) * 4) + ((plane) * 32))
+#define HILOW(x,y,plane) ((x) % 2)
+#define HINIBBLE(x) (x>>4)
+#define LONIBBLE(x) (x & 0x0F)
+#define COMBINE(h,l) (((h)<<4)+(l))
+
+/* Is the value in the high or low nibble */
+#define HIGH 0
+#define LOW 1
+
+/* RGB Locations for Arduino */
+#define AR_RED 1
+#define AR_GREEN 0
+#define AR_BLUE 2
+
+/* PC -> Arduino Plane LUT */
+const uint8_t planelut[] = {AR_RED, AR_GREEN, AR_BLUE};
 
 EthernetDisplay::EthernetDisplay(std::string address, int port)
 {
@@ -116,4 +135,45 @@ int EthernetDisplay::getXSize() {
 int EthernetDisplay::getYSize() {
     return y;
 }
+
+void EthernetDisplay::setval(uint8_t x, uint8_t y, uint8_t plane, uint8_t val) {
+    int vp = x / 8;
+    x = x % 8;
+    
+    uint8_t oldval, newval, newplane, setval;
+    newplane = planelut[plane];
+    oldval = viewports[vp][INDEX(x,y,newplane)];
+    setval = val / 16;
+
+    if (HILOW(x,y,newplane)) {
+      // LOW
+      newval = COMBINE(HINIBBLE(oldval), setval);
+    } else {
+      // HIGH
+      newval = COMBINE(setval, LONIBBLE(oldval));
+    }
+
+    viewports[vp][INDEX(x,y,newplane)] = newval;
+}
+
+uint8_t EthernetDisplay::getval(uint8_t x, uint8_t y, uint8_t plane) {
+    int vp = x / 8;
+    x = x % 8;
+    
+    plane = planelut[plane];
+    return viewports[vp][INDEX(x,y,plane)];
+}
+
+void EthernetDisplay::sync() {
+  for (int i = 0; i < displayCount; i++) {
+    sync(i);
+  }
+}
+
+void EthernetDisplay::sync(int display) {
+    if (sendto(socket_h, viewports[display], DISPLAYSIZE, 0, (struct sockaddr *) &si_other, sizeof(si_other))==-1)
+      return;
+}
+
+    
 

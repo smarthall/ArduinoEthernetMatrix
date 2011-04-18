@@ -27,6 +27,11 @@
 #include <cstring>
 #include <string>
 
+/* RGB Locations for PC */
+#define PC_RED 0
+#define PC_GREEN 1
+#define PC_BLUE 2
+
 class EthernetDisplay {
     uint8_t **viewports;
     int socket_h, displayCount;
@@ -38,9 +43,18 @@ class EthernetDisplay {
     virtual ~EthernetDisplay();
     virtual bool operator==(const EthernetDisplay& other) const;
     
+    //Accessors
     int getDisplayCount();
     int getXSize();
     int getYSize();
+    
+    //Pixel functions
+    void setval(uint8_t x, uint8_t y, uint8_t plane, uint8_t val);
+    uint8_t getval(uint8_t x, uint8_t y, uint8_t plane);
+    
+    //Network Functions
+    void sync();
+    void sync(int display);
 };
 
 #endif // ETHERNETDISPLAY_H
