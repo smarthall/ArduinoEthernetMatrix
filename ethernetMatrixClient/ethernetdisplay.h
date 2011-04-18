@@ -34,9 +34,8 @@
 
 class EthernetDisplay {
     uint8_t **viewports;
-    int socket_h, displayCount;
     struct sockaddr_in si_control, si_img, si_me;
-    int x, y;
+    int x, y, socket_h, displayCount;
     
   public:
     EthernetDisplay(std::string address);
