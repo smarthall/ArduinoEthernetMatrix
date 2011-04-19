@@ -23,11 +23,9 @@ int main(int argc, char *argv[])
   EthernetDisplay e = EthernetDisplay(SRV_IP);
 
   // Read font
-  printf("Reading Font... ");
   pamfile = pm_openr(argv[1]);
   fontimage = pnm_readpam(pamfile, &inpam, PAM_STRUCT_SIZE(tuple_type));
   pm_close(pamfile);
-  printf("done\n");
 
   for (int xpos = 0; (xpos + e.getXSize() - 1) < inpam.width; xpos++) {
     // Convert from PAM to viewport
