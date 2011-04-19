@@ -30,7 +30,7 @@
 #define CONTROL_PORT 1026
 #define IMG_PORT 1025
 #define BUFFERSIZE 10
-#define DISPLAYSIZE 97
+#define DISPLAYSIZE 96
 
 /* For accessing pixels in the viewport */
 #define INDEX(x,y,plane) (1 + ((x) / 2 ) + ((y) * 4) + ((plane) * 32))
@@ -186,7 +186,12 @@ void EthernetDisplay::sync() {
 }
 
 void EthernetDisplay::sync(int display) {
-    if (sendto(socket_h, viewports[display], DISPLAYSIZE, 0, (struct sockaddr *) &si_img, sizeof(si_img))==-1)
+    uint8_t buf[DISPLAYSIZE + 1];
+    
+    buf[0] = display;
+    memcpy(buf + 1, viewports[display], sizeof(uint8_t) * DISPLAYSIZE);
+    
+    if (sendto(socket_h, buf, DISPLAYSIZE + 1, 0, (struct sockaddr *) &si_img, sizeof(si_img))==-1)
       return;
 }
 
