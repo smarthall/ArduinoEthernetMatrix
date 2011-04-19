@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
   
   // Set displays to random data
   for (int i=0; i < e.getDisplayCount(); i++) {
-    fread(buf, sizeof(char), 96, randomfile);
+    fread(buf, sizeof(uint8_t), BUFLEN, randomfile);
     e.fromraw(i, buf);
   }
 
