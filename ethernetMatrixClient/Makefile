@@ -16,10 +16,7 @@ viewport.o: viewport.c viewport.h
 	$(CC) $(CFLAGS) -c viewport.c -o viewport.o
 
 sendletter: sendletter.c viewport.o
-	$(CC) $(CFLAGS) -lnetpbm sendletter.c viewport.o -o sendletter
-
-sendstring: sendstring.c viewport.o
-	$(CC) $(CFLAGS) -lnetpbm sendstring.c viewport.o -o sendstring
+	$(CC) $(CFLAGS) -lnetpbm sendletter.c viewport.o -o sendlette
 
 # Compile C++ API
 ethernetdisplay.o: ethernetdisplay.cpp ethernetdisplay.h
@@ -50,6 +47,9 @@ sendrandom.o: sendrandom.cpp
 sendpnm.o: sendpnm.cpp
 	$(CC) $(CPPFLAGS) -c sendpnm.cpp -o sendpnm.o
 
+sendstring.o: sendstring.cpp
+	$(CC) $(CPPFLAGS) -c sendstring.cpp -o sendstring.o
+
 
 # Link C++ Programs
 countdisplays: countdisplays.o ethernetdisplay.o
@@ -75,6 +75,9 @@ sendrandom: sendrandom.o ethernetdisplay.o
 
 sendpnm: sendpnm.o ethernetdisplay.o
 	$(CC) $(LDFLAGS) sendpnm.o ethernetdisplay.o -o sendpnm
+
+sendstring: sendstring.o ethernetdisplay.o
+	$(CC) $(LDFLAGS) sendstring.o ethernetdisplay.o -o sendstring
 
 clean:
 	- rm -f sendrandom sendinitial sendpnm sendletter sendblank sendorient sendstring slideanim countdisplays displayinfo

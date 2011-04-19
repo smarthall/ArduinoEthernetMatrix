@@ -1,5 +1,3 @@
-#define _GNU_SOURCE
-
 #include <stdlib.h>
 #include <stdint.h>
 #include <limits.h>
@@ -9,7 +7,9 @@
 #include <unistd.h>
 #include <netpbm/pam.h>
 
-#include "viewport.h"
+#include "ethernetdisplay.h"
+
+#define SRV_IP "192.168.1.15"
 
 void bitblit(tuple ** dest, int destx, int desty, tuple **src, int srcx, int srcy, int width, int height) {
   int maxx = srcx + width;
@@ -31,8 +31,8 @@ int main(int argc, char *argv[])
   FILE *pamfile = NULL;
   struct pam inpam, mempam;
   tuple **fontimage, **memimage;
-  viewport display;
   int textlen = strlen(argv[2]);
+  EthernetDisplay e = EthernetDisplay(SRV_IP);
 
   // Read font
   pamfile = pm_openr(argv[1]);
@@ -60,23 +60,18 @@ int main(int argc, char *argv[])
     bitblit(memimage, i * 8, 0, fontimage, (ch - 32) * 8, 0, 8, 8);
   }
 
-  int senddisplay = strtol(argv[3], NULL, 10);
-
-  // Make a viewport
-  display = allocviewport(senddisplay);
-
-  for (int xpos = 0; (xpos + 7) < mempam.width; xpos++) {
+  for (int xpos = 0; (xpos + (e.getXSize() - 1)) < mempam.width; xpos++) {
     // Convert from PAM to viewport
-    for (int x = xpos; x < (xpos+8); x++) {
-      for (int y = 0; y < 8; y++) {
-        setval(display, x - xpos, y, 0, memimage[y][x][0]);
-        setval(display, x - xpos, y, 1, memimage[y][x][1]);
-        setval(display, x - xpos, y, 2, memimage[y][x][2]);
-      }   
-    }   
+    for (int x = xpos; x < (xpos + e.getXSize()); x++) {
+      for (int y = 0; y < (e.getYSize()); y++) {
+        e.setval(x - xpos, y, 0, memimage[y][x][0]);
+        e.setval(x - xpos, y, 1, memimage[y][x][1]);
+        e.setval(x - xpos, y, 2, memimage[y][x][2]);
+      }
+    }
 
     // Send to Arduino
-    sendimage(display, "192.168.1.15", 1025);
+    e.sync();
 
     // Pause between frames
     usleep(70000);
@@ -86,10 +81,9 @@ int main(int argc, char *argv[])
   for (int x = 0; x < mempam.width; x++)
     for (int y = 0; y < mempam.height; y++)
       pnm_freepamtuple(memimage[y][x]);
-  freeviewport(display);
   pnm_freepamarray( fontimage, &inpam );
   pnm_freepamarray( memimage, &mempam );
 
-  return 0;
+  return EXIT_SUCCESS;
 }
 
