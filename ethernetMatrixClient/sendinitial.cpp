@@ -1,20 +1,16 @@
 #define _GNU_SOURCE
 
-#include <arpa/inet.h>
-#include <netinet/in.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
-#include <sys/socket.h>
 #include <unistd.h>
 
-#define PORT 1025
+#include "ethernetdisplay.h"
+
 #define SRV_IP "192.168.1.15"
 
-unsigned char buffer[97] = {
-// display number
-0x00,
+unsigned char buffer[96] = {
 //green
 0xF0, 0x00, 0x00, 0x0F,
 0x00, 0x00, 0x00, 0x00,
@@ -43,34 +39,17 @@ unsigned char buffer[97] = {
 0x0F, 0xFF, 0xFF, 0xF0,
 0xF0, 0x00, 0x00, 0x0F };
 
-void diep(char *s)
-{
-  perror(s);
-  exit(1);
-}
-
 int main(int argc, char * argv[])
 {
-  struct sockaddr_in si_other;
-  int s, slen=sizeof(si_other);
+  // Create ethernet object
+  EthernetDisplay e = EthernetDisplay(SRV_IP);
 
-  buffer[0] = strtol(argv[1], NULL, 10);
-
-  if ((s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP))==-1)
-    diep("socket");
-
-  memset((char *) &si_other, 0, sizeof(si_other));
-  si_other.sin_family = AF_INET;
-  si_other.sin_port = htons(PORT);
-  if (inet_aton(SRV_IP, &si_other.sin_addr)==0) {
-    fprintf(stderr, "inet_aton() failed\n");
-    exit(1);
+  // Set all displays blank
+  for (int i=0; i < e.getDisplayCount(); i++) {
+    e.fromraw(i, buffer);
   }
 
-  if (sendto(s, buffer, sizeof(buffer), 0, (struct sockaddr *) &si_other, slen)==-1)
-    diep("sendto()");
-
-  close(s);
-  return 0;
+  // Update all displays
+  e.sync();
 }
 
