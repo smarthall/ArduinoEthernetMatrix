@@ -1,11 +1,9 @@
 UNAME := $(shell uname -s)
-CC := gcc
-CFLAGS := -Wall -pedantic -std=c99 -g
+CC := g++
 CPPFLAGS := -Wall -pedantic -g
 LDFLAGS := -lstdc++ -lnetpbm
 
 ifeq ($(UNAME),Darwin)
-	CFLAGS := $(CFLAGS) -I/opt/local/include -L/opt/local/lib
 	CPPFLAGS := $(CPPFLAGS) -I/opt/local/include
 	LDFLAGS := $(LDFLAGS) -L/opt/local/lib
 endif
