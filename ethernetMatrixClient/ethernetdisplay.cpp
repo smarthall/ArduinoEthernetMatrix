@@ -33,7 +33,7 @@
 #define DISPLAYSIZE 96
 
 /* For accessing pixels in the viewport */
-#define INDEX(x,y,plane) (1 + ((x) / 2 ) + ((y) * 4) + ((plane) * 32))
+#define INDEX(x,y,plane) (((x) / 2 ) + ((y) * 4) + ((plane) * 32))
 #define HILOW(x,y,plane) ((x) % 2)
 #define HINIBBLE(x) (x>>4)
 #define LONIBBLE(x) (x & 0x0F)
@@ -188,7 +188,7 @@ void EthernetDisplay::sync() {
 void EthernetDisplay::sync(int display) {
     uint8_t buf[DISPLAYSIZE + 1];
     
-    buf[0] = display;
+    buf[0] = displayCount - display - 1;
     memcpy(buf + 1, viewports[display], sizeof(uint8_t) * DISPLAYSIZE);
     
     if (sendto(socket_h, buf, DISPLAYSIZE + 1, 0, (struct sockaddr *) &si_img, sizeof(si_img))==-1)
