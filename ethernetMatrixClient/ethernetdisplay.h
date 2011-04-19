@@ -47,9 +47,10 @@ class EthernetDisplay {
     int getXSize();
     int getYSize();
     
-    //Pixel functions
+    //Image functions
     void setval(uint8_t x, uint8_t y, uint8_t plane, uint8_t val);
     uint8_t getval(uint8_t x, uint8_t y, uint8_t plane);
+    void fromraw(uint8_t display, uint8_t *viewport);
     
     //Network Functions
     void sync();

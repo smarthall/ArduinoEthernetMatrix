@@ -175,6 +175,10 @@ uint8_t EthernetDisplay::getval(uint8_t x, uint8_t y, uint8_t plane) {
     return viewports[vp][INDEX(x,y,plane)];
 }
 
+void EthernetDisplay::fromraw(uint8_t display, uint8_t *viewport) {
+    memcpy(viewports[display], viewport, DISPLAYSIZE * sizeof(uint8_t));
+}
+
 void EthernetDisplay::sync() {
   for (int i = 0; i < displayCount; i++) {
     sync(i);
