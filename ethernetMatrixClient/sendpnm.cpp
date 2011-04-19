@@ -1,5 +1,3 @@
-#define _GNU_SOURCE
-
 #include <stdlib.h>
 #include <stdint.h>
 #include <limits.h>
@@ -15,7 +13,6 @@
 
 int main(int argc, char *argv[])
 {
-  uint8_t image[3][8][4];
   uint8_t buffer[97];
   FILE *pamfile = NULL;
   struct pam inpam;
