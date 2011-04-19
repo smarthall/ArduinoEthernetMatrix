@@ -10,13 +10,7 @@ ifeq ($(UNAME),Darwin)
 	LDFLAGS := $(LDFLAGS) -L/opt/local/lib
 endif
 
-all: sendrandom sendinitial sendpnm sendletter sendblank sendorient sendstring slideanim countdisplays displayinfo
-
-viewport.o: viewport.c viewport.h
-	$(CC) $(CFLAGS) -c viewport.c -o viewport.o
-
-sendletter: sendletter.c viewport.o
-	$(CC) $(CFLAGS) -lnetpbm sendletter.c viewport.o -o sendletter
+all: sendrandom sendinitial sendpnm sendblank sendorient sendstring slideanim countdisplays displayinfo
 
 # Compile C++ API
 ethernetdisplay.o: ethernetdisplay.cpp ethernetdisplay.h
@@ -80,7 +74,7 @@ sendstring: sendstring.o ethernetdisplay.o
 	$(CC) $(LDFLAGS) sendstring.o ethernetdisplay.o -o sendstring
 
 clean:
-	- rm -f sendrandom sendinitial sendpnm sendletter sendblank sendorient sendstring slideanim countdisplays displayinfo
+	- rm -f sendrandom sendinitial sendpnm sendblank sendorient sendstring slideanim countdisplays displayinfo
 	- rm -f *.o
 ifeq ($(UNAME),Darwin)
 	- rm -rf *.dSYM
