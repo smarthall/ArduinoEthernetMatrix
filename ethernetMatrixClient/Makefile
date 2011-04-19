@@ -16,7 +16,7 @@ viewport.o: viewport.c viewport.h
 	$(CC) $(CFLAGS) -c viewport.c -o viewport.o
 
 sendletter: sendletter.c viewport.o
-	$(CC) $(CFLAGS) -lnetpbm sendletter.c viewport.o -o sendlette
+	$(CC) $(CFLAGS) -lnetpbm sendletter.c viewport.o -o sendletter
 
 # Compile C++ API
 ethernetdisplay.o: ethernetdisplay.cpp ethernetdisplay.h
