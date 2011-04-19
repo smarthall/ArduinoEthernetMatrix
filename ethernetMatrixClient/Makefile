@@ -21,9 +21,6 @@ sendrandom: sendrandom.c
 sendinitial: sendinitial.c
 	$(CC) $(CFLAGS) sendinitial.c -o sendinitial
 
-sendblank: sendblank.c
-	$(CC) $(CFLAGS) sendblank.c -o sendblank
-
 sendorient: sendorient.c
 	$(CC) $(CFLAGS) sendorient.c -o sendorient
 
@@ -36,10 +33,11 @@ sendletter: sendletter.c viewport.o
 sendstring: sendstring.c viewport.o
 	$(CC) $(CFLAGS) -lnetpbm sendstring.c viewport.o -o sendstring
 
-# Compile C++ Programs
+# Compile C++ API
 ethernetdisplay.o: ethernetdisplay.cpp ethernetdisplay.h
 	$(CC) $(CPPFLAGS) -c ethernetdisplay.cpp -o ethernetdisplay.o
 
+# Compile C++ Programs
 countdisplays.o: countdisplays.cpp
 	$(CC) $(CPPFLAGS) -c countdisplays.cpp -o countdisplays.o
 
@@ -48,6 +46,9 @@ displayinfo.o: displayinfo.cpp
 
 slideanim.o: slideanim.cpp
 	$(CC) $(CPPFLAGS) -c slideanim.cpp -o slideanim.o
+
+sendblank.o: sendblank.cpp
+	$(CC) $(CPPFLAGS) -c sendblank.cpp -o sendblank.o
 
 # Link C++ Programs
 countdisplays: countdisplays.o ethernetdisplay.o
@@ -58,6 +59,9 @@ displayinfo: displayinfo.o ethernetdisplay.o
 
 slideanim: slideanim.o ethernetdisplay.o
 	$(CC) $(LDFLAGS) slideanim.o ethernetdisplay.o -o slideanim
+
+sendblank: sendblank.o ethernetdisplay.o
+	$(CC) $(LDFLAGS) sendblank.o ethernetdisplay.o -o sendblank
 
 clean:
 	- rm -f sendrandom sendinitial sendpnm sendletter sendblank sendorient sendstring slideanim countdisplays displayinfo
