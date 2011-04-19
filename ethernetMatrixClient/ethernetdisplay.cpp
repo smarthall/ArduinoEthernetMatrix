@@ -191,7 +191,7 @@ void EthernetDisplay::sync(int display) {
     buf[0] = displayCount - display - 1;
     memcpy(buf + 1, viewports[display], sizeof(uint8_t) * DISPLAYSIZE);
     
-    if (sendto(socket_h, buf, DISPLAYSIZE + 1, 0, (struct sockaddr *) &si_img, sizeof(si_img))==-1)
+    if (sendto(socket_h, buf, DISPLAYSIZE + 1, 0, (struct sockaddr *) &si_img, sizeof(si_img))!=0)
       return;
 }
 
