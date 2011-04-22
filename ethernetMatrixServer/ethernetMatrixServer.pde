@@ -69,6 +69,7 @@ void loop() {
         Serial.write((byte)0x60); // Data Length
         Serial.write(buf + (UDP_DATA_P + 1), 96); // Data
         Serial.write((byte)0x00); // Checksum - Fake it till you make it :D
+        delay(5);
         digitalWrite(INDICATOR_PIN, LOW);
       }
       
