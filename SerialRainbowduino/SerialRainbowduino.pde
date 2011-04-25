@@ -38,16 +38,27 @@ A variable should be declared volatile whenever its value can be changed by some
  only place that this is likely to occur is in sections of code associated with interrupts, called an 
  interrupt service routine.
  */
- 
-#define STATE_WAITING   0
-#define STATE_ADDRESS   1
-#define STATE_LENGTH    2
-#define STATE_DATA      3
-#define STATE_CHECKSUM  4
-#define STATE_ASSIGN    5
 
-int serial_state = STATE_WAITING;
-byte address, data_len, checksum, data_read;
+//Maximum serial packet size
+#define SERIAL_BUFFER 128
+
+// Serial Codes
+#define START_CODE 0x1C
+#define FRAME_CMD 0x46
+#define SCAN_CMD  0x45
+
+// Serial States
+#define STATE_WAITING    0
+#define STATE_STARTCODE  1
+#define STATE_COMMAND    2
+#define STATE_ADDRESS    3
+#define STATE_DATALEN    4
+#define STATE_DATA       5
+
+uint8_t sbuf[SERIAL_BUFFER];
+uint8_t serial_state = STATE_WAITING;
+uint8_t sdata_p, scmd, saddress, sdatalen, validpacket = 0;
+
 byte myaddress = 0x00;
 
 extern unsigned char buffer[2][96];  //two buffers (backbuffer and frontbuffer)
@@ -91,48 +102,41 @@ void setup() {
   Serial.begin(115200);
 }
 
-//the mainloop - try to fetch data from the i2c bus and copy it into our buffer
+//the mainloop
 void loop() {
-  if (Serial.available() > 0) {
+    if (Serial.available() > 0) {
     byte data = Serial.read();
-    Serial.write(data);
     
-    switch (serial_state) {
-      case STATE_WAITING:
-        if (data == 0x46) {
-          serial_state = STATE_ADDRESS;
-        } else if (data == 0x45) {
-          serial_state = STATE_ASSIGN;
-        }
+    checkForPacket(data);
+    
+    if (validpacket) {
+      switch (scmd) {
+        case SCAN_CMD:
+          if ((sdatalen == 1) && (saddress == 0xFF)) {
+            myaddress = sbuf[0];
+            sbuf[0]++;
+            sendPacket(SCAN_CMD, 0xFF, 0x01, sbuf);
+            memset(buffer[!g_bufCurr], 0x00, 96);
+            g_swapNow = 1;
+            // Packet is dealt with
+            validpacket = 0;
+          }
         break;
-      case STATE_ASSIGN:
-        myaddress = data;
-        Serial.write((byte)0x45);
-        Serial.write((byte)++data);
-        serial_state = STATE_WAITING;
+        case FRAME_CMD:
+          if ((sdatalen == 0x60) && (saddress == myaddress)) {
+            memcpy(buffer[!g_bufCurr], sbuf, sdatalen);
+            g_swapNow = 1;
+            // Packet is dealt with
+            validpacket = 0;
+          }
         break;
-      case STATE_ADDRESS:
-        address = data; // TODO Check the message is for us
-        if (address == myaddress) {
-          serial_state = STATE_LENGTH;
-        } else {
-          serial_state = STATE_WAITING;
-        }
-        break;
-      case STATE_LENGTH:
-        data_len = data;
-        data_read = 0;
-        serial_state = STATE_DATA;
-        break;
-      case STATE_DATA:
-        buffer[!g_bufCurr][data_read++] = data;
-        if (data_len == data_read) serial_state = STATE_CHECKSUM;
-        break;
-      case STATE_CHECKSUM:
-        checksum = data; // TODO Check Checksum
-        g_swapNow = 1; // TODO Swap if checksum is good
-        serial_state = STATE_WAITING;
-        break;
+      }
+     
+      // If we ignored the packet, forward it on
+      if (validpacket) {
+        sendPacket(scmd, saddress, sdatalen, sbuf);
+        validpacket = 0;
+      }
     }
   }
 }
@@ -266,3 +270,63 @@ void open_line(unsigned char line) {    // open the scaning line
     }
   }
 }
+
+void sendPacket(byte command, byte address, byte datalen, byte *data) {
+  byte checksum;
+  
+  // Write out the command
+  Serial.write((byte)START_CODE);
+  Serial.write((byte)command);
+  Serial.write((byte)address);
+  Serial.write((byte)datalen);
+  Serial.write(data, datalen);
+  
+  // Calculate checksum
+  checksum = START_CODE;
+  checksum ^= command;
+  checksum ^= address;
+  checksum ^= datalen;
+  for (int i = 0; i < datalen; i++) {
+    checksum ^= data[i];
+  }
+  
+  // Write checksum
+  Serial.write((byte)checksum);
+}
+
+void checkForPacket(byte data) {
+  static byte checksum;
+  checksum ^= data;
+  
+  switch (serial_state) {
+    case STATE_WAITING:
+       checksum = START_CODE;
+       if (data == START_CODE) serial_state = STATE_STARTCODE;
+    break;
+    case STATE_STARTCODE:
+      scmd = data;
+      serial_state = STATE_COMMAND;
+    break;
+    case STATE_COMMAND:
+      saddress = data;
+      serial_state = STATE_ADDRESS;
+    break;
+    case STATE_ADDRESS:
+      sdatalen = data;
+      sdata_p = 0;
+      serial_state = STATE_DATALEN;
+    break;
+    case STATE_DATALEN:
+      *(sbuf + sdata_p++) = data;
+      if (sdata_p == sdatalen)
+        serial_state = STATE_DATA;
+    break;
+    case STATE_DATA:
+      // Checksum has been XORed with itself by now, should be zero
+      if (checksum == 0x00) validpacket = 1;
+      serial_state = STATE_WAITING;
+    break;
+  }
+}
+
+

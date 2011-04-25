@@ -3,17 +3,29 @@
 #include "WProgram.h"
 #include "etherShield.h"
 
-// Definitions
-#define FRAME_START 0x46
-#define INIT_START  0x45
 #define BUFFER_SIZE 250
+#define SERIAL_BUFFER 128
 #define SENDBUF_LEN 5
 #define SCAN_INTERVAL 500
 
-#define STATE_WAITING    0
-#define STATE_DISPCOUNT  1
-
 #define INDICATOR_PIN    7
+
+#define STATE_WAITING    0
+#define STATE_STARTCODE  1
+#define STATE_COMMAND    2
+#define STATE_ADDRESS    3
+#define STATE_DATALEN    4
+#define STATE_DATA       5
+
+// Definitions
+#define START_CODE 0x1C
+
+#define FRAME_CMD 0x46
+#define SCAN_CMD  0x45
+
+uint8_t sbuf[SERIAL_BUFFER];
+uint8_t serial_state = STATE_WAITING;
+uint8_t sdata_p, scmd, saddress, sdatalen, validpacket = 0;
 
 // Settings
 static uint8_t mymac[6] = {0x54,0x55,0x58,0x10,0x00,0x24};
@@ -21,7 +33,6 @@ static uint8_t myip[4]  = {192,168,1,15};
 
 // State
 uint8_t displaycount = 0;
-uint8_t serial_state = STATE_WAITING;
 uint8_t lockip[]     = {0,0,0,0};
 uint8_t locked       = 0;
 
@@ -63,14 +74,8 @@ void loop() {
       
       if (buf[IP_PROTO_P] == IP_PROTO_UDP_V && buf[UDP_DST_PORT_H_P] == 4 && buf[UDP_DST_PORT_L_P] == 1
        && buf[UDP_LEN_H_P] == 0 && buf[UDP_LEN_L_P] == 105 ) {
-        digitalWrite(INDICATOR_PIN, HIGH);
-        Serial.write((byte)FRAME_START); // Start Code (for a frame)
-        Serial.write(buf[UDP_DATA_P]); // Address
-        Serial.write((byte)0x60); // Data Length
-        Serial.write(buf + (UDP_DATA_P + 1), 96); // Data
-        Serial.write((byte)0x00); // Checksum - Fake it till you make it :D
-        delay(5);
-        digitalWrite(INDICATOR_PIN, LOW);
+         // Send to children
+         sendPacket(FRAME_CMD, buf[UDP_DATA_P], 0x60, buf + (UDP_DATA_P + 1));
       }
       
       if (buf[IP_PROTO_P] == IP_PROTO_UDP_V && buf[UDP_DST_PORT_H_P] == 4 && buf[UDP_DST_PORT_L_P] == 2
@@ -88,22 +93,24 @@ void loop() {
   if (Serial.available() > 0) {
     byte data = Serial.read();
     
-    switch (serial_state) {
-      case STATE_WAITING:
-        if (data == INIT_START) serial_state = STATE_DISPCOUNT;
-      break;
-      case STATE_DISPCOUNT:
-        displaycount = data;
-        serial_state = STATE_WAITING;
-        digitalWrite(INDICATOR_PIN, LOW);
-      break;
+    checkForPacket(data);
+    
+    if (validpacket) {
+      switch (scmd) {
+        case SCAN_CMD:
+          if (sdatalen == 1) displaycount = sbuf[0];
+          digitalWrite(INDICATOR_PIN, LOW);
+        break;
+      }
+     
+      // Packet is dealt with
+      validpacket = 0;
     }
   }
   
-  if ((displaycount == 0) && (nextScan < millis())) {   
-    // Send the init command to the children
-    Serial.write((byte)INIT_START);
-    Serial.write((byte)0x00); // Start displays at 0
+  if ((displaycount == 0) && (nextScan < millis())) {
+    byte startZero = 0x00;
+    sendPacket(SCAN_CMD, 0xFF, 0x01, &startZero);
     nextScan = millis() + SCAN_INTERVAL;
   }
 }
@@ -117,5 +124,63 @@ void setupEthernet() {
   es.ES_enc28j60PhyWrite (PHLCON, 0x476);
   delay (10);
   es.ES_init_ip_arp_udp_tcp (mymac, myip, 80);
+}
+
+void sendPacket(byte command, byte address, byte datalen, byte *data) {
+  byte checksum;
+  
+  // Write out the command
+  Serial.write((byte)START_CODE);
+  Serial.write((byte)command);
+  Serial.write((byte)address);
+  Serial.write((byte)datalen);
+  Serial.write(data, datalen);
+  
+  // Calculate checksum
+  checksum = START_CODE;
+  checksum ^= command;
+  checksum ^= address;
+  checksum ^= datalen;
+  for (int i = 0; i < datalen; i++) {
+    checksum ^= data[i];
+  }
+  
+  // Write checksum
+  Serial.write((byte)checksum);
+}
+
+void checkForPacket(byte data) {
+  static byte checksum;
+  checksum ^= data;
+  
+  switch (serial_state) {
+    case STATE_WAITING:
+       checksum = START_CODE;
+       if (data == START_CODE) serial_state = STATE_STARTCODE;
+    break;
+    case STATE_STARTCODE:
+      scmd = data;
+      serial_state = STATE_COMMAND;
+    break;
+    case STATE_COMMAND:
+      saddress = data;
+      serial_state = STATE_ADDRESS;
+    break;
+    case STATE_ADDRESS:
+      sdatalen = data;
+      sdata_p = 0;
+      serial_state = STATE_DATALEN;
+    break;
+    case STATE_DATALEN:
+      *(sbuf + sdata_p++) = data;
+      if (sdata_p == sdatalen)
+        serial_state = STATE_DATA;
+    break;
+    case STATE_DATA:
+      // Checksum has been XORed with itself by now, should be zero
+      if (checksum == 0x00) validpacket = 1;
+      serial_state = STATE_WAITING;
+    break;
+  }
 }
 
